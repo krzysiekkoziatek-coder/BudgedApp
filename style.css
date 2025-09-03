@@ -169,17 +169,17 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
         width: 100%;
     }
     #expenses-table tr {
-        margin-bottom: 0.4rem; /* FINALNA POPRAWKA: Mniejszy odstęp między kartami */
+        margin-bottom: 0.4rem; 
         border: 1px solid var(--border-color);
         border-radius: 8px;
-        padding: 0.4rem 0.5rem; /* FINALNA POPRAWKA: Mniejszy padding wewnętrzny karty */
+        padding: 0.4rem 0.5rem; 
         position: relative;
     }
     #expenses-table td {
         display: flex;
         justify-content: space-between;
         text-align: right;
-        padding: 0.1rem 0; /* FINALNA POPRAWKA: Mniejszy odstęp pionowy w komórce */
+        padding: 0.1rem 0; 
         border: none;
         border-bottom: 1px dashed var(--border-color);
         font-size: 0.85rem;
@@ -189,7 +189,7 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     }
     #expenses-table td[data-field="akcje"] {
         position: absolute;
-        top: 0.4rem; /* FINALNA POPRAWKA: Dopasowanie do paddingu */
+        top: 0.4rem; 
         left: 0.5rem;
         width: auto;
         border-bottom: none;
@@ -199,7 +199,7 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     }
     #expenses-table td[data-field="opłacone"] {
         position: absolute;
-        top: 0.4rem; /* FINALNA POPRAWKA: Dopasowanie do paddingu */
+        top: 0.4rem; 
         right: 0.5rem;
         width: auto;
         border-bottom: none;
@@ -219,7 +219,7 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     #expenses-table td[data-field="kwota"],
     #expenses-table td[data-field="kategoria"],
     #expenses-table td[data-field="data"] {
-        margin-top: 1.5rem; /* FINALNA POPRAWKA: Znacznie mniejszy odstęp od góry */
+        margin-top: 1.5rem; 
         padding-top: 0.1rem;
     }
     #expenses-table td::before {
