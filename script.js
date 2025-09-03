@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let dashboardDate = new Date();
     let dashboardDisplayMode = 'monthly';
     let longPressTimer;
-    let isEditing = false;
+    let isEditing = false; // Flaga zapobiegająca wielokrotnej edycji
 
     // --- SELEKTORY DOM ---
     const appBody = document.body;
@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- RENDEROWANIE ---
     const render = () => {
+        isEditing = false; // Resetuj flagę edycji przy każdym renderowaniu
         if (activeTab === 'budget') {
             budgetView.style.display = 'block';
             dashboardView.style.display = 'none';
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const renderMonthlyTable = () => {
-        tableHead.innerHTML = `<tr><th>Opis</th><th>Kwota</th><th>Kategoria</th><th>Data</th><th>Opłacone</th></tr>`;
+        tableHead.innerHTML = `<tr><th>Opis</th><th>Kwota</th><th>Kategoria</th><th>Data</th><th>Akcje</th><th>Opłacone</th></tr>`;
         const monthKey = getKeyForDate(currentDate);
         const monthExpenses = expenses.filter(e => e.date.startsWith(monthKey)).sort((a,b) => new Date(b.date) - new Date(a.date));
         
@@ -123,18 +124,60 @@ document.addEventListener('DOMContentLoaded', () => {
             </tr>`).join('');
             
         if (monthExpenses.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
         }
     };
     
-    const renderYearlyTable = () => { /* ... bez zmian ... */ };
+    const renderYearlyTable = () => {
+        tableHead.innerHTML = `<tr><th>Kat.</th>${MONTHS.map(m => `<th>${m.substring(0,3)}</th>`).join('')}<th>Suma</th></tr>`;
+        const year = currentDate.getFullYear();
+        const yearExpenses = expenses.filter(e => e.date.startsWith(year));
+        const categories = [...new Set(yearExpenses.map(e => e.category))];
+        let bodyHtml = categories.map(cat => {
+            let categoryTotal = 0;
+            const monthlySums = Array(12).fill(0).map((_, i) => {
+                const monthKey = `${year}-${String(i + 1).padStart(2, '0')}`;
+                const sum = yearExpenses.filter(e => e.category === cat && e.date.startsWith(monthKey)).reduce((s, e) => s + e.amount, 0);
+                categoryTotal += sum;
+                return `<td>${sum > 0 ? formatCurrency(sum) : '-'}</td>`;
+            }).join('');
+            return `<tr><td>${cat}</td>${monthlySums}<td><strong>${formatCurrency(categoryTotal)}</strong></td></tr>`;
+        }).join('');
+        let grandTotal = 0;
+        const totalSums = Array(12).fill(0).map((_, i) => {
+            const monthKey = `${year}-${String(i + 1).padStart(2, '0')}`;
+            const total = yearExpenses.filter(e => e.date.startsWith(monthKey)).reduce((s, e) => s + e.amount, 0);
+            grandTotal += total;
+            return `<td>${formatCurrency(total)}</td>`;
+        }).join('');
+        bodyHtml += `<tr style="font-weight: bold; border-top: 2px solid var(--text-color);"><td><strong>SUMA</strong></td>${totalSums}<td>${formatCurrency(grandTotal)}</td></tr>`;
+        tableBody.innerHTML = bodyHtml;
+        if(categories.length === 0) tableBody.innerHTML = `<tr><td colspan="14" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
+    };
 
-    const renderCloseMonthButton = () => { /* ... bez zmian ... */ };
+    const renderCloseMonthButton = () => {
+        const monthKey = getKeyForDate(currentDate);
+        if (closedMonths[monthKey]) {
+            closeMonthBtn.textContent = 'Otwórz miesiąc';
+            closeMonthBtn.onclick = () => {
+                delete closedMonths[monthKey];
+                const nextMonthDate = new Date(currentDate);
+                nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+                const nextMonthKey = getKeyForDate(nextMonthDate);
+                delete savingsForward[nextMonthKey];
+                saveData();
+                render();
+            };
+        } else {
+            closeMonthBtn.textContent = 'Zamknij miesiąc';
+            closeMonthBtn.onclick = () => closeMonthPrompt.classList.toggle('hidden');
+        }
+    };
     
-    const renderDashboardView = () => { /* ... bez zmian ... */ };
-    const populateDashboardSelectors = () => { /* ... bez zmian ... */ };
+    const renderDashboardView = () => { /* Funkcja bez zmian */ };
+    const populateDashboardSelectors = () => { /* Funkcja bez zmian */ };
 
-    // --- LOGIKA EDYCJI I USUWANIA ---
+    // --- LOGIKA EDYCJI ---
     const handleEdit = (target) => {
         if (isEditing) return;
         isEditing = true;
@@ -142,6 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = target.closest('tr');
         const id = row.dataset.id;
         const expense = expenses.find(exp => String(exp.id) === id);
+        if (!expense) { isEditing = false; return; }
+
         const field = target.dataset.field;
         const originalValue = (field === 'amount') ? expense.amount : expense[field];
         
@@ -157,10 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             input = document.createElement('input');
             input.type = (field === 'amount') ? 'number' : (field === 'date' ? 'date' : 'text');
+            if(field === 'amount') input.step = '0.01';
             input.value = originalValue;
         }
 
-        target.replaceWith(input);
+        target.style.display = 'none';
+        target.parentNode.insertBefore(input, target.nextSibling);
         input.focus();
 
         const saveChange = () => {
@@ -168,15 +215,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (field === 'amount') newValue = parseFloat(newValue) || 0;
             expense[field] = newValue;
             saveData();
-            render();
-            isEditing = false;
+            render(); // To wywoła reset isEditing
         };
         
         input.addEventListener('blur', saveChange);
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') input.blur();
             if (e.key === 'Escape') {
-                input.replaceWith(target);
+                input.remove();
+                target.style.display = '';
                 isEditing = false;
             }
         });
@@ -185,7 +232,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- OBSŁUGA ZDARZEŃ ---
     navBudgetBtn.addEventListener('click', () => { activeTab = 'budget'; navBudgetBtn.classList.add('active'); navDashboardBtn.classList.remove('active'); render(); });
     navDashboardBtn.addEventListener('click', () => { activeTab = 'dashboard'; navDashboardBtn.classList.add('active'); navBudgetBtn.classList.remove('active'); render(); });
-    // ... reszta event listenerów nawigacji ...
+    document.getElementById('monthly-view-btn').addEventListener('click', () => { currentView = 'monthly'; document.getElementById('monthly-view-btn').classList.add('active'); document.getElementById('yearly-view-btn').classList.remove('active'); render(); });
+    document.getElementById('yearly-view-btn').addEventListener('click', () => { currentView = 'yearly'; document.getElementById('yearly-view-btn').classList.add('active'); document.getElementById('monthly-view-btn').classList.remove('active'); render(); });
+    
+    const navigateDate = (dir) => {
+        if (currentView === 'monthly') currentDate.setMonth(currentDate.getMonth() + dir);
+        else currentDate.setFullYear(currentDate.getFullYear() + dir);
+        render();
+    };
+    document.getElementById('prev-date-btn').addEventListener('click', () => navigateDate(-1));
+    document.getElementById('next-date-btn').addEventListener('click', () => navigateDate(1));
     
     incomeInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -201,35 +257,41 @@ document.addEventListener('DOMContentLoaded', () => {
         expenses.push({ id: crypto.randomUUID(), description: document.getElementById('expense-description').value, amount: parseFloat(document.getElementById('expense-amount').value), category: document.getElementById('expense-category').value, date: `${getKeyForDate(currentDate)}-${String(new Date().getDate()).padStart(2, '0')}`, paid: false });
         saveData(); render(); expenseForm.reset();
     });
+
+    document.getElementById('copy-expenses-btn').addEventListener('click', () => {
+        const prevMonthDate = new Date(currentDate); prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+        const prevMonthKey = getKeyForDate(prevMonthDate); const currentMonthKey = getKeyForDate(currentDate);
+        const prevMonthExpenses = expenses.filter(e => e.date.startsWith(prevMonthKey));
+        if (prevMonthExpenses.length > 0) {
+            prevMonthExpenses.forEach(exp => expenses.push({ ...exp, id: crypto.randomUUID(), date: exp.date.replace(prevMonthKey, currentMonthKey), paid: false }));
+            saveData(); render();
+        }
+    });
     
-    // NOWE EVENT LISTENERY DLA TABELI
+    const cancelLongPress = () => clearTimeout(longPressTimer);
+
     tableBody.addEventListener('mousedown', (e) => {
-        if (e.target.closest('input, select, button')) return;
+        if (isEditing || e.target.closest('input, select, button')) return;
         const row = e.target.closest('tr.expense-row');
         if (!row) return;
-
         longPressTimer = setTimeout(() => {
             if (confirm('Czy na pewno chcesz usunąć ten wydatek?')) {
-                const id = row.dataset.id;
-                expenses = expenses.filter(exp => String(exp.id) !== id);
+                expenses = expenses.filter(exp => String(exp.id) !== row.dataset.id);
                 saveData();
                 render();
             }
-        }, 500); // 500ms = 0.5s
+        }, 500);
     });
-
-    const cancelLongPress = () => clearTimeout(longPressTimer);
     tableBody.addEventListener('mouseup', cancelLongPress);
-    tableBody.addEventListener('mouseout', cancelLongPress);
+    tableBody.addEventListener('mouseleave', cancelLongPress, true);
+
     tableBody.addEventListener('touchstart', (e) => {
-        if (e.target.closest('input, select, button')) return;
+        if (isEditing || e.target.closest('input, select, button')) return;
         const row = e.target.closest('tr.expense-row');
         if (!row) return;
-
         longPressTimer = setTimeout(() => {
             if (confirm('Czy na pewno chcesz usunąć ten wydatek?')) {
-                const id = row.dataset.id;
-                expenses = expenses.filter(exp => String(exp.id) !== id);
+                expenses = expenses.filter(exp => String(exp.id) !== row.dataset.id);
                 saveData();
                 render();
             }
@@ -254,7 +316,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // ... reszta starych event listenerów ...
+    const savingsAmountInput = document.getElementById('savings-amount');
+    const saveSavingsBtn = document.getElementById('save-savings-yes');
+    savingsAmountInput.addEventListener('input', () => { saveSavingsBtn.disabled = !savingsAmountInput.value || parseFloat(savingsAmountInput.value) < 0; });
+    saveSavingsBtn.addEventListener('click', () => {
+        const amount = parseFloat(savingsAmountInput.value);
+        const currentMonthKey = getKeyForDate(currentDate);
+        const nextMonthDate = new Date(currentDate);
+        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+        const nextMonthKey = getKeyForDate(nextMonthDate);
+        savingsForward[nextMonthKey] = amount;
+        closedMonths[currentMonthKey] = true;
+        saveData();
+        closeMonthPrompt.classList.add('hidden');
+        savingsAmountInput.value = '';
+        saveSavingsBtn.disabled = true;
+        render();
+    });
+    document.getElementById('save-savings-no').addEventListener('click', () => { closeMonthPrompt.classList.add('hidden'); savingsAmountInput.value = ''; saveSavingsBtn.disabled = true; });
+    
+    const dashboardMonthSelect = document.getElementById('dashboard-month-select');
+    const dashboardYearSelect = document.getElementById('dashboard-year-select');
+    dashboardMonthSelect.addEventListener('change', (e) => { dashboardDate.setMonth(parseInt(e.target.value)); renderDashboardView(); });
+    dashboardYearSelect.addEventListener('change', (e) => { dashboardDate.setFullYear(parseInt(e.target.value)); renderDashboardView(); });
+    document.getElementById('dashboard-monthly-btn').addEventListener('click', () => { dashboardDisplayMode = 'monthly'; document.getElementById('dashboard-monthly-btn').classList.add('active'); document.getElementById('dashboard-yearly-btn').classList.remove('active'); renderDashboardView(); });
+    document.getElementById('dashboard-yearly-btn').addEventListener('click', () => { dashboardDisplayMode = 'yearly'; document.getElementById('dashboard-yearly-btn').classList.add('active'); document.getElementById('dashboard-monthly-btn').classList.remove('active'); renderDashboardView(); });
+
+    const applyTheme = (theme) => {
+        appBody.setAttribute('data-theme', theme);
+        localStorage.setItem('budgetAppTheme', theme);
+        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.theme === theme));
+        if (activeTab === 'dashboard') {
+            setTimeout(renderDashboardView, 300);
+        }
+    };
+    
+    themeSelector.addEventListener('click', (e) => {
+        if (e.target.classList.contains('theme-btn')) {
+            applyTheme(e.target.dataset.theme);
+        }
+    });
     
     const init = () => {
         const savedTheme = localStorage.getItem('budgetAppTheme') || 'cyber';
@@ -262,6 +363,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loadData();
         render();
     };
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js').then(reg => console.log('SW registered!', reg)).catch(err => console.log('SW registration failed: ', err));
+        });
+    }
 
     init();
 });
