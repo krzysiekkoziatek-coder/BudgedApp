@@ -144,8 +144,10 @@ th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-colo
 .kpi-tile { padding: 0.75rem; text-align: center; }
 .kpi-tile .label { font-size: 0.75rem; }
 .kpi-tile .value { font-size: 1.2rem; font-weight: bold; }
-/* --- POPRAWKA 4: Dashboard scroll i rozmiar wykresów --- */
-.chart-container { min-height: 250px; display: flex; flex-direction: column; justify-content: center; } /* Mniejsza minimalna wysokość i flex */
+/* --- POPRAWKA: Dashboard scroll i rozmiar wykresów --- */
+.chart-container { min-height: 220px; max-height: 300px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 1rem; } /* Bardziej kompaktowe wysokości */
+.chart-container canvas { height: 100% !important; width: 100% !important; } /* Upewnij się, że canvas wypełnia kontener */
+
 h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
 .dashboard-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .dashboard-controls select { flex-grow: 1; }
@@ -158,7 +160,7 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
 .theme-btn.active { box-shadow: 0 0 0 3px var(--accent-color); transform: scale(1.1); }
 .hidden { display: none !important; }
 
-/* --- POPRAWKA 1, 2, 3: Tabela w widoku mobilnym (do 767px) --- */
+/* --- Tabela w widoku mobilnym (do 767px) --- */
 @media (max-width: 767px) {
     #expenses-table thead {
         display: none; /* Ukryj oryginalne nagłówki */
@@ -168,66 +170,71 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
         width: 100%;
     }
     #expenses-table tr {
-        margin-bottom: 0.75rem; /* Mniejsze przerwy między wierszami */
+        margin-bottom: 0.75rem;
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 0.5rem;
-        position: relative; /* Dla pozycjonowania przycisków */
+        position: relative;
     }
     #expenses-table td {
         display: flex;
         justify-content: space-between;
         text-align: right;
-        padding: 0.3rem 0.2rem; /* Mniejsze paddingi */
+        padding: 0.25rem 0.2rem; /* Jeszcze mniejsze paddingi */
         border: none;
         border-bottom: 1px dashed var(--border-color);
-        font-size: 0.9rem; /* Delikatnie mniejsza czcionka */
+        font-size: 0.85rem; /* Mniejsza czcionka */
     }
     #expenses-table tr td:last-child {
         border-bottom: none;
     }
 
-    /* Specjalne pozycjonowanie dla akcji (checkbox i kosz) */
+    /* POPRAWKA: Pozycjonowanie kosza i checkboxa - teraz w "nagłówku" karty */
     #expenses-table td[data-field="akcje"] {
         position: absolute;
         top: 0.5rem;
-        right: 0.5rem;
+        left: 0.5rem; /* Kosz po lewej */
         width: auto;
         border-bottom: none;
         padding: 0;
-        justify-content: flex-end; /* Przycisk kosza po prawej */
-        font-size: 1.2rem; /* Rozmiar ikony */
+        justify-content: flex-start; /* Wyrównaj do lewej */
+        font-size: 1.2rem;
     }
     #expenses-table td[data-field="opłacone"] {
         position: absolute;
         top: 0.5rem;
-        left: 0.5rem;
+        right: 0.5rem; /* Checkbox po prawej */
         width: auto;
         border-bottom: none;
         padding: 0;
-        justify-content: flex-start; /* Checkbox po lewej */
+        justify-content: flex-end; /* Wyrównaj do prawej */
     }
-    #expenses-table td[data-field="opłacone"]::before {
-        display: none; /* Ukryj etykietę "Opłacone" dla checkboxa */
-    }
+    #expenses-table td[data-field="opłacone"]::before,
     #expenses-table td[data-field="akcje"]::before {
-        display: none; /* Ukryj etykietę "Akcje" dla kosza */
+        display: none; /* Ukryj etykiety dla tych pól, bo ich pozycja jest oczywista */
     }
     #expenses-table td[data-field="opłacone"] input[type="checkbox"] {
-        width: 20px; /* Standardowy rozmiar checkboxa */
+        width: 20px;
         height: 20px;
         margin: 0;
     }
 
-    /* Etykiety dla pozostałych pól */
+    /* Etykiety dla pozostałych pól - zaczynają się niżej, nie kolidują z akcjami */
+    #expenses-table td[data-field="opis"],
+    #expenses-table td[data-field="kwota"],
+    #expenses-table td[data-field="kategoria"],
+    #expenses-table td[data-field="data"] {
+        margin-top: 1.8rem; /* Odsuń tekst od góry, aby zrobić miejsce dla akcji */
+        padding-top: 0.25rem; /* Zachowaj mały padding */
+    }
     #expenses-table td::before {
-        content: attr(data-label); /* Użyj nowego atrybutu data-label jako etykiety */
+        content: attr(data-label);
         font-weight: bold;
         text-align: left;
         color: var(--subtle-text-color);
         text-transform: capitalize;
         margin-right: 0.5rem;
-        flex-shrink: 0; /* Zapobiega zwijaniu się etykiety */
+        flex-shrink: 0;
     }
 }
 
