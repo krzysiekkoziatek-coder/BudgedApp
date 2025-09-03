@@ -47,12 +47,13 @@ body {
     background-image: var(--bg-gradient);
     background-attachment: fixed;
     color: var(--text-color);
-    line-height: 1.5; /* Zmniejszony line-height dla kompaktowości */
+    line-height: 1.5; 
     font-size: 16px;
+    -webkit-text-size-adjust: 100%; /* Zapobieganie powiększaniu czcionek przez przeglądarki mobilne */
 }
 
 /* --- Kontener Główny i Układy --- */
-#app-container { max-width: 1200px; margin: 0 auto; padding: 1rem; display: flex; flex-direction: column; min-height: 100vh; }
+#app-container { max-width: 1200px; margin: 0 auto; padding: 0.75rem; display: flex; flex-direction: column; min-height: 100vh; }
 main { flex-grow: 1; }
 
 /* --- Nagłówek i Nawigacja --- */
@@ -60,14 +61,14 @@ header {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 1rem; 
+    margin-bottom: 0.75rem; 
     padding: 0.5rem 0; 
     border: none;
     background: transparent;
     border-bottom: 1px solid var(--border-color);
 }
-.logo { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); }
-nav button { background: none; border: none; color: var(--subtle-text-color); font-size: 0.9rem; font-weight: 600; padding: 0.4rem 0.8rem; margin-left: 0.25rem; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+.logo { font-size: 1.25rem; font-weight: 800; color: var(--accent-color); }
+nav button { background: none; border: none; color: var(--subtle-text-color); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.6rem; margin-left: 0.25rem; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
 nav button.active { background-color: var(--accent-color); color: white; }
 [data-theme="cyber"] nav button.active { color: #1e1e3f; }
 nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); }
@@ -77,60 +78,59 @@ nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); colo
     background-color: var(--card-bg-color); 
     border-radius: 12px; 
     box-shadow: var(--shadow); 
-    padding: 1rem; 
-    margin-bottom: 1rem; 
+    padding: 0.75rem; 
+    margin-bottom: 0.75rem; 
     border: 1px solid var(--border-color);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 
 /* --- Karta Bilansu (wersja kompaktowa) --- */
-.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.75rem; }
+.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.5rem; }
 #balance-card .balance-grid { 
     display: grid; 
-    grid-template-columns: repeat(2, 1fr); 
-    grid-template-rows: auto auto auto;
-    grid-auto-flow: column;
-    gap: 0 1rem; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 0.25rem 1rem;
     align-items: center; 
 }
-#balance-card .balance-item { padding: 0.2rem 0; }
-#balance-card .balance-item label { font-size: 0.65rem; color: var(--subtle-text-color); margin-bottom: 0; }
-#balance-card .balance-item .value, #income-input { font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
+#balance-card .balance-item label { font-size: 0.6rem; color: var(--subtle-text-color); line-height: 1; }
+#balance-card .balance-item .value, #income-input { font-size: 0.8rem; font-weight: 600; line-height: 1.2; }
 #income-input { padding: 0; height: auto; }
-#balance-card .balance-item:nth-child(5) { grid-row: 3; grid-column: 1 / -1; margin-top: 0.5rem; text-align: center; } /* Balans na całą szerokość */
+#balance-card .balance-item:nth-child(5) { margin-top: 0.5rem; text-align: right; } /* Balans */
 
 /* --- Tabela --- */
-.table-controls { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
-.table-controls > div { display: flex; justify-content: center; }
-.date-navigation { grid-column: 1 / -1; }
+.table-controls { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 0.5rem; margin-bottom: 1rem; }
+.view-switcher { grid-column: 1; grid-row: 1; display: flex; }
+.action-buttons { grid-column: 2; grid-row: 1; display: flex; justify-content: flex-end; }
+.date-navigation { grid-column: 1 / -1; grid-row: 2; display: flex; justify-content: space-between; align-items: center; }
+#current-date-display { flex-grow: 1; }
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
-th, td { padding: 0.5rem; border: 1px solid var(--border-color); font-size: 0.8rem; }
-th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-color); background-color: rgba(255,255,255,0.05); }
+th, td { padding: 0.5rem; border: 1px solid var(--border-color); font-size: 0.75rem; }
+th { font-size: 0.65rem; }
 tbody tr:hover { background-color: rgba(255, 255, 255, 0.1); }
 td.actions { width: 40px; text-align: center; }
-td input, td select { width: 100%; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--card-bg-color); color: var(--text-color); font-size: 0.8rem; }
+td input, td select { font-size: 0.75rem; }
 
 /* --- Przyciski --- */
-.btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; border-radius: 6px; }
+.btn { padding: 0.5rem 0.6rem; font-size: 0.75rem; border-radius: 6px; flex-grow: 1; text-align: center; }
+.date-navigation .btn { flex-grow: 0; }
+.view-switcher .btn, .action-buttons .btn { width: 100%; }
 
 /* --- Formularz dodawania wydatków (kompaktowy) --- */
-#inline-expense-form { display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+#inline-expense-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
 #expense-description { grid-column: 1 / -1; }
-#expense-amount { grid-column: 1; }
-#expense-category { grid-column: 2; }
 #inline-expense-form button { grid-column: 1 / -1; }
-#inline-expense-form input, #inline-expense-form select { padding: 0.6rem; font-size: 0.9rem; }
+#inline-expense-form input, #inline-expense-form select { padding: 0.6rem; font-size: 0.8rem; }
 
 /* --- Stopka --- */
 footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; }
 
 /* --- Dashboard --- */
-.dashboard-grid, .kpi-row { gap: 1rem; }
-.kpi-tile { padding: 0.75rem; }
-.kpi-tile .label { font-size: 0.7rem; }
-.kpi-tile .value { font-size: 1.2rem; }
+.dashboard-grid, .kpi-row { gap: 0.75rem; }
+.kpi-tile { padding: 0.5rem; }
+.kpi-tile .label { font-size: 0.65rem; }
+.kpi-tile .value { font-size: 1rem; }
 .chart-container { min-height: 280px; }
 h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 
@@ -138,17 +138,14 @@ h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 @media (min-width: 768px) {
     body { font-size: 16px; }
     #app-container { padding: 1.5rem; }
-    header { margin-bottom: 2rem; padding-bottom: 1rem; }
+    header { margin-bottom: 2rem; padding: 0.5rem 0; }
     .logo { font-size: 1.8rem; }
-    nav button { font-size: 1rem; padding: 0.5rem 1rem; margin-left: 0.5rem; }
-    .card { padding: 1.5rem; margin-bottom: 1.5rem; }
-    #balance-card .balance-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); grid-auto-flow: unset; gap: 1rem; }
-    #balance-card .balance-item { padding: 0; }
-    #balance-card .balance-item:nth-child(5) { grid-row: unset; grid-column: unset; margin-top: 0; text-align: left; }
+    nav button { font-size: 1rem; padding: 0.5rem 1rem; }
+    .card { padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 16px; }
+    #balance-card .balance-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
     #balance-card .balance-item label { font-size: 0.8rem; }
     #balance-card .balance-item .value { font-size: 1.25rem; }
-    .table-controls { grid-template-columns: auto 1fr auto; flex-direction: row; align-items: center; }
-    .date-navigation { grid-column: unset; }
+    .table-controls { display: flex; flex-direction: row; align-items: center; justify-content: space-between; }
     #inline-expense-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; }
     #expense-description, #expense-amount, #expense-category, #inline-expense-form button { grid-column: unset; }
     th, td { padding: 0.75rem 1rem; font-size: 1rem; }
@@ -157,4 +154,3 @@ h3 { font-size: 1rem; margin-bottom: 0.5rem; }
     .chart-container.pie { grid-column: span 5; }
     .chart-container.bar { grid-column: span 7; }
 }
-
