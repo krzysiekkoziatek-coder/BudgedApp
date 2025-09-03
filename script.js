@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatCurrency = (amount, signDisplay = 'auto') => new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN', signDisplay }).format(amount || 0);
     const getKeyForDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
-    // --- RENDEROWANIE ---
+    // --- GŁÓWNA LOGIKA RENDEROWANIA ---
     const render = () => {
         isEditing = false; // Resetuj flagę edycji przy każdym renderowaniu
         if (activeTab === 'budget') {
@@ -174,8 +174,166 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    const renderDashboardView = () => { /* Pełna funkcja */ };
-    const populateDashboardSelectors = () => { /* Pełna funkcja */ };
+    const renderDashboardView = () => {
+        if(window.pieChartInstance) window.pieChartInstance.destroy();
+        if(window.barChartInstance) window.barChartInstance.destroy();
+
+        populateDashboardSelectors();
+
+        const isYearly = dashboardDisplayMode === 'yearly';
+        const year = dashboardDate.getFullYear();
+        
+        let filteredExpenses, previousPeriodExpenses;
+        let totalIncome = 0;
+        
+        if (isYearly) {
+            const yearStr = String(year);
+            filteredExpenses = expenses.filter(e => e.date.startsWith(yearStr));
+            previousPeriodExpenses = expenses.filter(e => e.date.startsWith(String(year - 1)));
+            totalIncome = Object.entries(incomes).filter(([k]) => k.startsWith(yearStr)).reduce((s, [,v]) => s + v, 0) + 
+                          Object.entries(savingsForward).filter(([k]) => k.startsWith(yearStr)).reduce((s, [,v]) => s + v, 0);
+        } else {
+            const monthKey = getKeyForDate(dashboardDate);
+            filteredExpenses = expenses.filter(e => e.date.startsWith(monthKey));
+            const prevDate = new Date(dashboardDate);
+            prevDate.setMonth(prevDate.getMonth() - 1);
+            const prevMonthKey = getKeyForDate(prevDate);
+            previousPeriodExpenses = expenses.filter(e => e.date.startsWith(prevMonthKey));
+            totalIncome = (incomes[monthKey] || 0) + (savingsForward[monthKey] || 0);
+        }
+        
+        const totalExpenses = filteredExpenses.reduce((s, e) => s + e.amount, 0);
+        const balance = totalIncome - totalExpenses;
+        document.getElementById('kpi-total-income').textContent = formatCurrency(totalIncome);
+        document.getElementById('kpi-total-expenses').textContent = formatCurrency(totalExpenses);
+        document.getElementById('kpi-balance').textContent = formatCurrency(balance);
+        document.getElementById('kpi-balance').style.color = balance >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+
+        const totalPreviousExpenses = previousPeriodExpenses.reduce((s, e) => s + e.amount, 0);
+        const comparisonEl = document.getElementById('kpi-comparison');
+        document.getElementById('kpi-comparison-label').textContent = isYearly ? "Porównanie wydatków z pop. rokiem" : "Porównanie wydatków z pop. miesiąca";
+
+        if (totalPreviousExpenses > 0) {
+            const diff = totalExpenses - totalPreviousExpenses;
+            comparisonEl.textContent = formatCurrency(diff, 'exceptZero');
+            comparisonEl.style.color = diff > 0 ? 'var(--danger-color)' : 'var(--success-color)';
+        } else {
+            comparisonEl.textContent = "N/A";
+            comparisonEl.style.color = 'var(--text-color)';
+        }
+        
+        const categorySpending = filteredExpenses.reduce((acc, e) => {
+            acc[e.category] = (acc[e.category] || 0) + e.amount;
+            return acc;
+        }, {});
+        
+        const sortedCategories = Object.entries(categorySpending).sort(([,a],[,b]) => b - a);
+        const categorySummaryTable = document.getElementById('category-summary-table');
+        categorySummaryTable.innerHTML = sortedCategories.map(([cat, amount]) => `
+            <tr>
+                <td>${cat}</td>
+                <td style="text-align: right;">${formatCurrency(amount)}</td>
+            </tr>
+        `).join('');
+        if (sortedCategories.length === 0) categorySummaryTable.innerHTML = `<tr><td colspan="2">Brak danych.</td></tr>`;
+
+        const expenseSummaryTable = document.getElementById('expense-summary-table');
+        const sortedExpenses = [...filteredExpenses].sort((a,b) => b.amount - a.amount);
+        expenseSummaryTable.innerHTML = sortedExpenses.map(exp => `
+             <tr>
+                <td>${exp.description}</td>
+                <td style="text-align: right;">${formatCurrency(exp.amount)}</td>
+            </tr>
+        `).join('');
+        if (sortedExpenses.length === 0) expenseSummaryTable.innerHTML = `<tr><td colspan="2">Brak wydatków.</td></tr>`;
+
+        const computedStyles = getComputedStyle(appBody);
+        const chartTextColor = computedStyles.getPropertyValue('--text-color').trim();
+        const chartGridColor = computedStyles.getPropertyValue('--border-color').trim();
+        const accentColor = computedStyles.getPropertyValue('--accent-color').trim();
+        const accentColorTransparent = accentColor + '80';
+
+        const pieCtx = document.getElementById('category-pie-chart').getContext('2d');
+        window.pieChartInstance = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: sortedCategories.map(([cat]) => cat),
+                datasets: [{
+                    data: sortedCategories.map(([, amount]) => amount),
+                    backgroundColor: ['#0ea5e9', '#6366f1', '#8b5cf6', '#ec4899', '#22c55e', '#f97316', '#eab308', '#64748b', '#ef4444', '#14b8a6'],
+                    borderColor: computedStyles.getPropertyValue('--card-bg-color').trim(),
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: chartTextColor, padding: 15 } }
+                },
+                cutout: '60%'
+            }
+        });
+
+        const barCtx = document.getElementById('history-bar-chart').getContext('2d');
+        let barLabels, barData;
+        document.getElementById('bar-chart-title').textContent = isYearly ? "Wydatki w ciągu roku" : "Największe wydatki w miesiącu";
+
+        if (isYearly) {
+            barLabels = MONTHS;
+            barData = MONTHS.map((_, i) => {
+                const monthKey = `${year}-${String(i + 1).padStart(2, '0')}`;
+                return filteredExpenses.filter(e => e.date.startsWith(monthKey)).reduce((s, e) => s + e.amount, 0);
+            });
+        } else {
+            const topExpenses = filteredExpenses.sort((a,b) => b.amount - a.amount).slice(0, 10);
+            barLabels = topExpenses.map(e => e.description.length > 15 ? e.description.substring(0, 12)+'...' : e.description);
+            barData = topExpenses.map(e => e.amount);
+        }
+        
+        const barGradient = barCtx.createLinearGradient(0, 0, 0, barCtx.canvas.height);
+        barGradient.addColorStop(0, accentColor);
+        barGradient.addColorStop(1, accentColorTransparent);
+
+        window.barChartInstance = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: barLabels,
+                datasets: [{
+                    label: 'Suma wydatków',
+                    data: barData,
+                    backgroundColor: barGradient,
+                    borderColor: accentColor,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: chartTextColor }, grid: { color: chartGridColor } },
+                    x: { ticks: { color: chartTextColor }, grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    };
+
+    const populateDashboardSelectors = () => {
+        const yearSelect = document.getElementById('dashboard-year-select');
+        const monthSelect = document.getElementById('dashboard-month-select');
+        const yearsWithData = [...new Set(expenses.map(e => e.date.substring(0, 4)))];
+        const currentYear = new Date().getFullYear();
+        if (!yearsWithData.includes(String(currentYear))) yearsWithData.push(String(currentYear));
+        yearsWithData.sort((a, b) => b - a);
+        yearSelect.innerHTML = yearsWithData.map(y => `<option value="${y}" ${y == dashboardDate.getFullYear() ? 'selected' : ''}>${y}</option>`).join('');
+        monthSelect.innerHTML = MONTHS.map((m, i) => `<option value="${i}" ${i == dashboardDate.getMonth() ? 'selected' : ''}>${m}</option>`).join('');
+        monthSelect.style.display = dashboardDisplayMode === 'monthly' ? 'block' : 'none';
+    };
 
     // --- LOGIKA EDYCJI ---
     const handleEdit = (target) => {
@@ -273,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ['mouseup', 'mouseleave', 'touchend', 'touchmove'].forEach(evt => tableBody.addEventListener(evt, cancelLongPress));
 
     tableBody.addEventListener('mousedown', (e) => {
-        if (isEditing || e.target.closest('input, select, button')) return;
+        if (isEditing || e.target.closest('input, select')) return;
         const row = e.target.closest('tr.expense-row');
         if (!row) return;
         longPressTimer = setTimeout(() => {
@@ -286,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     tableBody.addEventListener('touchstart', (e) => {
-        if (isEditing || e.target.closest('input, select, button')) return;
+        if (isEditing || e.target.closest('input, select')) return;
         const row = e.target.closest('tr.expense-row');
         if (!row) return;
         longPressTimer = setTimeout(() => {
@@ -299,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     tableBody.addEventListener('click', (e) => {
+        cancelLongPress(); // Anuluj długie przytrzymanie, jeśli to było tylko kliknięcie
         if (e.target.classList.contains('editable')) {
             handleEdit(e.target);
         }
