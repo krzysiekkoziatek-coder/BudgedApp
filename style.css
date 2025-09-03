@@ -82,17 +82,17 @@ nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); colo
     -webkit-backdrop-filter: blur(10px);
 }
 
-/* --- POPRAWKA 1: Karta Bilansu (MOBILE) --- */
-.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.5rem 0.75rem; } /* Zmniejszony padding */
+/* --- Karta Bilansu (MOBILE) --- */
+.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.5rem 0.75rem; }
 #balance-card .balance-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.25rem 1rem; /* Zmniejszony odstęp pionowy */
+    gap: 0.25rem 1rem;
     align-items: center;
 }
 #balance-card .balance-item { padding: 0.1rem 0; }
-#balance-card .balance-item label { font-size: 0.65rem; color: var(--subtle-text-color); display: block; } /* Mniejsza etykieta */
-#balance-card .balance-item .value, #income-input { font-size: 0.9rem; font-weight: 600; line-height: 1.2; } /* Mniejsza czcionka wartości */
+#balance-card .balance-item label { font-size: 0.65rem; color: var(--subtle-text-color); display: block; }
+#balance-card .balance-item .value, #income-input { font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
 #income-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border-color); color: var(--text-color); padding: 0.1rem 0; }
 #balance-card .balance-item-full { grid-column: 1 / -1; margin-top: 0.25rem; text-align: center; background: rgba(0,0,0,0.1); padding: 0.25rem; border-radius: 8px; }
 
@@ -124,7 +124,7 @@ nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); colo
     width: 100%;
 }
 
-/* --- POPRAWKA 2: Przyciski --- */
+/* --- Przyciski --- */
 .btn { padding: 0.5rem 0.9rem; font-size: 0.8rem; border-radius: 8px; border: none; cursor: pointer; background-color: var(--primary-color); color: white; font-weight: 600; transition: background-color 0.2s; }
 .btn-accent { background-color: var(--accent-color); }
 .btn.active { background-color: var(--accent-color); }
@@ -144,8 +144,8 @@ th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-colo
 .kpi-tile { padding: 0.75rem; text-align: center; }
 .kpi-tile .label { font-size: 0.75rem; }
 .kpi-tile .value { font-size: 1.2rem; font-weight: bold; }
-/* --- POPRAWKA 4: Dashboard scroll --- */
-.chart-container { min-height: 280px; } /* Zmniejszona minimalna wysokość */
+/* --- POPRAWKA 4: Dashboard scroll i rozmiar wykresów --- */
+.chart-container { min-height: 250px; display: flex; flex-direction: column; justify-content: center; } /* Mniejsza minimalna wysokość i flex */
 h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
 .dashboard-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .dashboard-controls select { flex-grow: 1; }
@@ -158,44 +158,76 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
 .theme-btn.active { box-shadow: 0 0 0 3px var(--accent-color); transform: scale(1.1); }
 .hidden { display: none !important; }
 
-/* --- POPRAWKA 3: Tabela w widoku mobilnym (do 767px) --- */
+/* --- POPRAWKA 1, 2, 3: Tabela w widoku mobilnym (do 767px) --- */
 @media (max-width: 767px) {
     #expenses-table thead {
         display: none; /* Ukryj oryginalne nagłówki */
     }
-    #expenses-table, #expenses-table tbody, #expenses-table tr, #expenses-table td {
+    #expenses-table, #expenses-table tbody, #expenses-table tr {
         display: block; /* Zmień elementy tabeli na bloki */
         width: 100%;
     }
     #expenses-table tr {
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem; /* Mniejsze przerwy między wierszami */
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 0.5rem;
+        position: relative; /* Dla pozycjonowania przycisków */
     }
     #expenses-table td {
         display: flex;
-        justify-content: space-between; /* Etykieta po lewej, wartość po prawej */
-        text-align: right; /* Wyrównaj wartość do prawej */
-        padding: 0.4rem 0.2rem;
+        justify-content: space-between;
+        text-align: right;
+        padding: 0.3rem 0.2rem; /* Mniejsze paddingi */
         border: none;
         border-bottom: 1px dashed var(--border-color);
+        font-size: 0.9rem; /* Delikatnie mniejsza czcionka */
     }
     #expenses-table tr td:last-child {
         border-bottom: none;
     }
+
+    /* Specjalne pozycjonowanie dla akcji (checkbox i kosz) */
+    #expenses-table td[data-field="akcje"] {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: auto;
+        border-bottom: none;
+        padding: 0;
+        justify-content: flex-end; /* Przycisk kosza po prawej */
+        font-size: 1.2rem; /* Rozmiar ikony */
+    }
+    #expenses-table td[data-field="opłacone"] {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        width: auto;
+        border-bottom: none;
+        padding: 0;
+        justify-content: flex-start; /* Checkbox po lewej */
+    }
+    #expenses-table td[data-field="opłacone"]::before {
+        display: none; /* Ukryj etykietę "Opłacone" dla checkboxa */
+    }
+    #expenses-table td[data-field="akcje"]::before {
+        display: none; /* Ukryj etykietę "Akcje" dla kosza */
+    }
+    #expenses-table td[data-field="opłacone"] input[type="checkbox"] {
+        width: 20px; /* Standardowy rozmiar checkboxa */
+        height: 20px;
+        margin: 0;
+    }
+
+    /* Etykiety dla pozostałych pól */
     #expenses-table td::before {
-        content: attr(data-field); /* Użyj atrybutu data-field jako etykiety */
+        content: attr(data-label); /* Użyj nowego atrybutu data-label jako etykiety */
         font-weight: bold;
         text-align: left;
         color: var(--subtle-text-color);
         text-transform: capitalize;
-    }
-    #expenses-table td[data-field="paid"], #expenses-table td[data-field="actions"] {
-        justify-content: center; /* Wyśrodkuj checkbox i przycisk usuwania */
-    }
-    #expenses-table td[data-field="paid"]::before, #expenses-table td[data-field="actions"]::before {
-        margin-right: auto; /* Przesuń etykietę do lewej */
+        margin-right: 0.5rem;
+        flex-shrink: 0; /* Zapobiega zwijaniu się etykiety */
     }
 }
 
@@ -230,5 +262,5 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     .dashboard-table-container { grid-column: span 6; }
     .chart-container.pie { grid-column: span 5; }
     .chart-container.bar { grid-column: span 7; }
-    .chart-container { min-height: 350px; }
+    .chart-container { min-height: 350px; } /* Większa min-height dla desktopu */
 }
