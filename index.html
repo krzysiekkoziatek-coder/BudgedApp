@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACL - Aplikacja Budżetowa</title>
-    <!-- Zmiana: Dodano parametr ?v=2.0 aby wymusić odświeżenie stylów -->
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <!-- Zmiana: Dodano parametr ?v=4.0 aby wymusić odświeżenie stylów -->
+    <link rel="stylesheet" href="style.css?v=4.0">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#240b36">
 </head>
@@ -53,14 +53,14 @@
                             <button id="monthly-view-btn" class="btn active">Miesiąc</button>
                             <button id="yearly-view-btn" class="btn">Rok</button>
                         </div>
-                        <div class="date-navigation">
-                            <button id="prev-date-btn" class="btn">&lt;</button>
-                            <span id="current-date-display" style="font-weight: 600; width: 150px; text-align: center;"></span>
-                            <button id="next-date-btn" class="btn">&gt;</button>
-                        </div>
-                        <div>
+                         <div class="action-buttons">
                             <button id="copy-expenses-btn" class="btn">Kopiuj</button>
                             <button id="close-month-btn" class="btn btn-accent"></button>
+                        </div>
+                        <div class="date-navigation">
+                            <button id="prev-date-btn" class="btn">&lt;</button>
+                            <span id="current-date-display" style="font-weight: 600; text-align: center;"></span>
+                            <button id="next-date-btn" class="btn">&gt;</button>
                         </div>
                     </div>
 
@@ -161,4 +161,3 @@
     </script>
 </body>
 </html>
-
