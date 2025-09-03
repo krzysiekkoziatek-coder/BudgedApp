@@ -1,4 +1,4 @@
-const CACHE_NAME = 'acl-budget-cache-v1';
+const CACHE_NAME = 'acl-budget-cache-v2'; // ZMIANA WERSJI
 const urlsToCache = [
   '/',
   '/index.html',
@@ -38,7 +38,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
+            return caches.delete(cacheName); // Usuwa stare wersje cache
           }
         })
       );
