@@ -1,101 +1,4 @@
-/* --- Podstawowe Style i Zmienne CSS dla Motywów --- */
-body {
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    transition: background 0.5s ease-in-out, color 0.3s;
-}
-
-/* Motyw 1: "Ocean" (Jasny) */
-[data-theme="ocean"] {
-    --bg-gradient: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-    --card-bg-color: rgba(255, 255, 255, 0.45);
-    --text-color: #0c2a4c;
-    --subtle-text-color: #3e5e81;
-    --border-color: rgba(255, 255, 255, 0.3);
-    --primary-color: #3e5e81;
-    --primary-hover-color: #2b4562;
-    --accent-color: #0093E9;
-    --accent-hover-color: #007acc;
-    --danger-color: #e53e3e;
-    --success-color: #22c55e;
-}
-
-/* Motyw 2: "Cyber Punk" (Ciemny) */
-[data-theme="cyber"] {
-    --bg-gradient: linear-gradient(120deg, #240b36 0%, #0d0d2b 100%);
-    --card-bg-color: rgba(41, 32, 66, 0.45);
-    --text-color: #e0e0e0;
-    --subtle-text-color: #a0a0c0;
-    --border-color: rgba(255, 255, 255, 0.15);
-    --primary-color: #a0a0c0;
-    --primary-hover-color: #c0c0e0;
-    --accent-color: #c048f0;
-    --accent-hover-color: #d060ff;
-    --danger-color: #f87171;
-    --success-color: #4ade80;
-    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-/* --- Globalne Resetowanie i Ustawienia Body --- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-    height: 100%;
-    -webkit-tap-highlight-color: transparent;
-}
-body {
-    font-family: var(--font-family);
-    background-image: var(--bg-gradient);
-    background-attachment: fixed;
-    color: var(--text-color);
-    line-height: 1.5;
-    font-size: 15px;
-}
-
-/* --- Kontener Główny i Układy --- */
-#app-container { max-width: 1200px; margin: 0 auto; padding: 0.75rem; display: flex; flex-direction: column; min-height: 100vh; }
-main { flex-grow: 1; }
-
-/* --- Nagłówek i Nawigacja --- */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-.logo { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); }
-nav button { background: none; border: none; color: var(--subtle-text-color); font-size: 0.9rem; font-weight: 600; padding: 0.4rem 0.8rem; margin-left: 0.25rem; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
-nav button.active { background-color: var(--accent-color); color: white; }
-[data-theme="cyber"] nav button.active { color: #1e1e3f; }
-nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); }
-
-/* --- Stylowanie Kart (Glassmorphism) --- */
-.card {
-    background-color: var(--card-bg-color);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-/* --- Karta Bilansu (MOBILE) --- */
-.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.5rem 0.75rem; }
-#balance-card .balance-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25rem 1rem;
-    align-items: center;
-}
-#balance-card .balance-item { padding: 0.1rem 0; }
-#balance-card .balance-item label { font-size: 0.65rem; color: var(--subtle-text-color); display: block; }
-#balance-card .balance-item .value, #income-input { font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
-#income-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border-color); color: var(--text-color); padding: 0.1rem 0; }
-#balance-card .balance-item-full { grid-column: 1 / -1; margin-top: 0.25rem; text-align: center; background: rgba(0,0,0,0.1); padding: 0.25rem; border-radius: 8px; }
-
+/* ... cały CSS, który podałem wcześniej, pozostaje taki sam, z wyjątkiem poniższych zmian ... */
 /* --- Kontrolki tabeli (MOBILE) --- */
 .table-controls {
     display: flex;
@@ -105,220 +8,42 @@ nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); colo
     margin-bottom: 1rem;
     align-items: center;
 }
-.date-navigation { width: 100%; display: flex; justify-content: space-between; align-items: center; order: 1; }
-.view-switcher { order: 2; }
-.action-buttons { order: 3; }
-#current-date-display { font-weight: 600; text-align: center; }
+.date-navigation { order: 2; } /* Data na środku */
+.view-switcher { order: 1; } /* Miesiąc/Rok po lewej */
+.action-buttons { order: 3; } /* Kopia po prawej */
 
-/* --- Formularze (MOBILE) --- */
-#close-month-prompt, #inline-expense-form { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
-#savings-input-container { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
-#savings-input-container button { width: 100%; }
-#inline-expense-form input, #inline-expense-form select, #savings-input-container input {
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--card-bg-color);
-    color: var(--text-color);
-    width: 100%;
+/* --- Nowe style dla stopki karty i edycji --- */
+.card-footer-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end; /* Przycisk po prawej */
 }
-
-/* --- Przyciski --- */
-.btn { padding: 0.5rem 0.9rem; font-size: 0.8rem; border-radius: 8px; border: none; cursor: pointer; background-color: var(--primary-color); color: white; font-weight: 600; transition: background-color 0.2s; }
-.btn-accent { background-color: var(--accent-color); }
-.btn.active { background-color: var(--accent-color); }
-.icon-btn { background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--subtle-text-color); font-size: 1.1rem; }
-.icon-btn:hover { color: var(--danger-color); }
-
-/* --- Tabela (Desktop) --- */
-.table-wrapper { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; text-align: left; }
-th, td { padding: 0.6rem; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
-th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-color); background-color: rgba(255,255,255,0.05); }
-
-/* --- Dashboard (Mobile) --- */
-.dashboard-grid, .kpi-row { gap: 1rem; }
-.dashboard-grid { display: flex; flex-direction: column; }
-.kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.kpi-tile { padding: 0.75rem; text-align: center; }
-.kpi-tile .label { font-size: 0.75rem; }
-.kpi-tile .value { font-size: 1.2rem; font-weight: bold; }
-.chart-container { min-height: 220px; max-height: 300px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 1rem; }
-.chart-container canvas { height: 100% !important; width: 100% !important; }
-
-h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
-.dashboard-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.dashboard-controls select { flex-grow: 1; }
-
-/* --- Stopka --- */
-footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: var(--subtle-text-color); }
-#theme-selector { display: flex; justify-content: center; gap: 1rem; }
-.theme-btn { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.5); transition: transform 0.2s, box-shadow 0.2s; }
-.theme-btn:hover { transform: scale(1.1); }
-.theme-btn.active { box-shadow: 0 0 0 3px var(--accent-color); transform: scale(1.1); }
-.hidden { display: none !important; }
+.expense-info input, .expense-info select {
+    width: 100%;
+    background-color: rgba(255,255,255,0.2);
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    padding: 0.1rem 0.2rem;
+    font-size: inherit;
+    font-family: inherit;
+}
 
 /* --- Tabela w widoku mobilnym (do 767px) --- */
 @media (max-width: 767px) {
-    #expenses-table thead {
-        display: none;
-    }
-    #expenses-table, #expenses-table tbody {
-        display: block;
-    }
-    #expenses-table tr {
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-    #expenses-table td.expense-cell {
-        display: block;
-        padding: 0;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-    }
-    .expense-wrapper {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem;
-        gap: 0.5rem;
-    }
-    .expense-info {
-        flex-grow: 1; /* Zajmuje całą dostępną przestrzeń */
-        min-width: 0; /* Zapobiega wypychaniu przez flexbox */
-    }
-    .expense-main {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-    .expense-description {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; /* Dodaje ... gdy tekst jest za długi */
-    }
-    .expense-amount {
-        color: var(--accent-color);
-        padding-left: 0.5rem; /* Odstęp od opisu */
-        flex-shrink: 0; /* Zapobiega zwijaniu się kwoty */
-    }
-    .expense-details {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.75rem;
-        color: var(--subtle-text-color);
-        margin-top: 0.1rem;
-    }
-    .expense-category {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .expense-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-shrink: 0;
-    }
-    .expense-actions .icon-btn {
-        font-size: 1rem;
-        padding: 0.1rem;
-    }
-    .expense-actions input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-    }
+    /* ... cała sekcja @media (max-width: 767px) pozostaje taka sama, jak w poprzedniej odpowiedzi ... */
 }
 
 
 /* --- Style dla Desktopu (nadpisują mobilne) --- */
 @media (min-width: 768px) {
-    body { font-size: 16px; }
-    #app-container { padding: 1.5rem; }
-    header { margin-bottom: 2rem; padding-bottom: 1rem; }
-    .logo { font-size: 1.8rem; }
-    nav button { font-size: 1rem; padding: 0.5rem 1rem; margin-left: 0.5rem; }
-    .card { padding: 1.5rem; margin-bottom: 1.5rem; }
+    /* ... cała sekcja @media (min-width: 768px) pozostaje taka sama, jak w poprzedniej odpowiedzi ... */
     
-    .sticky-card { padding: 1rem; }
-    #balance-card .balance-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-    #balance-card .balance-item-full { grid-column: unset; text-align: left; background: none; padding: 0; }
-    #balance-card .balance-item label { font-size: 0.8rem; }
-    #balance-card .balance-item .value { font-size: 1.25rem; }
-    
-    .table-controls { flex-wrap: nowrap; justify-content: space-between; }
-    .date-navigation { width: auto; order: 2; }
+    /* Dodajemy styl dla kontrolek na desktopie */
+    .table-controls {
+        flex-wrap: nowrap;
+    }
+    .date-navigation { order: 2; }
     .view-switcher { order: 1; }
     .action-buttons { order: 3; }
-    
-    #inline-expense-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: center; }
-    #savings-input-container { flex-direction: row; }
-    
-    th, td { padding: 0.75rem 1rem; font-size: 1rem; border-bottom: 1px solid var(--border-color); }
-    th { border-top: 1px solid var(--border-color); }
-
-    /* Przywracamy standardową tabelę dla desktopu */
-    #expenses-table thead { display: table-header-group; }
-    #expenses-table tr { display: table-row; }
-    #expenses-table td { display: table-cell; vertical-align: middle; }
-    #expenses-table td.expense-cell { display: contents; } /* Usuwamy komórkę-wrapper */
-
-    .expense-wrapper {
-        display: contents; /* Usuwamy wrapper, aby elementy wylądowały w komórkach */
-    }
-    /* Ponieważ .expense-wrapper jest 'contents', poniższe style nie będą działać w gridzie tabeli.
-       Musimy przeprojektować renderowanie dla desktopu lub użyć innej techniki.
-       Najprościej będzie przywrócić starą logikę renderowania dla desktopu,
-       ale obecny kod JS jest ujednolicony. Trzymamy się więc jednej struktury HTML
-       i dostosowujemy ją w CSS. */
-
-    #expenses-table tr:not(:first-child) { border-top: 1px solid var(--border-color); }
-
-    /* Nowa logika dla desktopu z jedną komórką */
-    .expense-info {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.5rem 0;
-    }
-    .expense-main {
-        grid-column: 1 / 3;
-        display: flex;
-        justify-content: space-between;
-    }
-    .expense-details {
-        grid-column: 3 / 5;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    /* Ostatecznie, najczystszym rozwiązaniem dla desktopu byłoby przywrócenie starego renderowania
-       za pomocą warunku w JS, ale poniższy CSS powinien "udawać" tabelę. */
-    #expenses-table .expense-wrapper {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr auto auto; /* 6 kolumn */
-        width: 100%;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        gap: 1rem;
-    }
-    #expenses-table .expense-info { display: contents; }
-    #expenses-table .expense-main { display: contents; }
-    #expenses-table .expense-details { display: contents; }
-    #expenses-table .expense-description { grid-column: 1; }
-    #expenses-table .expense-amount { grid-column: 2; text-align: right; }
-    #expenses-table .expense-category { grid-column: 3; }
-    #expenses-table .expense-date { grid-column: 4; }
-    #expenses-table .expense-actions { grid-column: 5 / 7; display: flex; justify-content: flex-end; }
-
-
-    .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
-    .kpi-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-    .dashboard-table-container { grid-column: span 6; }
-    .chart-container.pie { grid-column: span 5; }
-    .chart-container.bar { grid-column: span 7; }
-    .chart-container { min-height: 350px; }
 }
