@@ -107,15 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const monthKey = getKeyForDate(currentDate);
         const monthExpenses = expenses.filter(e => e.date.startsWith(monthKey)).sort((a,b) => new Date(b.date) - new Date(a.date));
     
-        // ZAKTUALIZOWANA CZĘŚĆ: Dodano atrybuty data-field do każdej komórki <td>
+        // ZAKTUALIZOWANA CZĘŚĆ: Dodano atrybuty data-label do każdej komórki <td> dla widoku mobilnego
         tableBody.innerHTML = monthExpenses.map(expense => `
             <tr data-id="${expense.id}">
-                <td data-field="opis">${expense.description}</td>
-                <td data-field="kwota">${formatCurrency(expense.amount)}</td>
-                <td data-field="kategoria">${expense.category}</td>
-                <td data-field="data">${expense.date}</td>
-                <td data-field="opłacone"><input type="checkbox" ${expense.paid ? 'checked' : ''}></td>
-                <td data-field="akcje" class="actions"><button class="icon-btn delete-btn">🗑️</button></td>
+                <td data-field="opis" data-label="Opis">${expense.description}</td>
+                <td data-field="kwota" data-label="Kwota">${formatCurrency(expense.amount)}</td>
+                <td data-field="kategoria" data-label="Kategoria">${expense.category}</td>
+                <td data-field="data" data-label="Data">${expense.date}</td>
+                <td data-field="opłacone" data-label="Opłacone"><input type="checkbox" ${expense.paid ? 'checked' : ''}></td>
+                <td data-field="akcje" data-label="Akcje" class="actions"><button class="icon-btn delete-btn">🗑️</button></td>
             </tr>`).join('');
         if (monthExpenses.length === 0) tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
     };
