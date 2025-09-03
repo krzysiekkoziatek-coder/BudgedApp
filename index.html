@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACL - Aplikacja Budżetowa</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css?v=1.1"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="manifest.json">
 </head>
 <body data-theme="cyber">
@@ -57,8 +56,7 @@
                             <button id="next-date-btn" class="btn">&gt;</button>
                         </div>
                         <div class="action-buttons">
-                            <button id="copy-expenses-btn" class="btn">Kopiuj</button>
-                            <button id="close-month-btn" class="btn btn-accent"></button>
+                            <button id="copy-expenses-btn" class="btn">Kopia wydatków</button>
                         </div>
                     </div>
 
@@ -84,6 +82,10 @@
 
                     <div class="table-wrapper">
                         <table id="expenses-table"> <thead></thead> <tbody></tbody> </table>
+                    </div>
+
+                    <div class="card-footer-actions">
+                        <button id="close-month-btn" class="btn btn-accent"></button>
                     </div>
                 </div>
             </div>
