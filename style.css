@@ -38,17 +38,21 @@ body {
 
 /* --- Globalne Resetowanie i Ustawienia Body --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body { 
+    height: 100%;
+    -webkit-tap-highlight-color: transparent; /* Usunięcie podświetlenia przy dotyku */
+}
 body {
     font-family: var(--font-family);
     background-image: var(--bg-gradient);
     background-attachment: fixed;
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.5; /* Zmniejszony line-height dla kompaktowości */
+    font-size: 16px;
 }
 
 /* --- Kontener Główny i Układy --- */
-#app-container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; display: flex; flex-direction: column; min-height: 100vh; }
+#app-container { max-width: 1200px; margin: 0 auto; padding: 1rem; display: flex; flex-direction: column; min-height: 100vh; }
 main { flex-grow: 1; }
 
 /* --- Nagłówek i Nawigacja --- */
@@ -56,14 +60,14 @@ header {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    margin-bottom: 2rem; 
-    padding-bottom: 1rem; 
+    margin-bottom: 1rem; 
+    padding: 0.5rem 0; 
     border: none;
     background: transparent;
     border-bottom: 1px solid var(--border-color);
 }
-.logo { font-size: 1.8rem; font-weight: 800; color: var(--accent-color); }
-nav button { background: none; border: none; color: var(--subtle-text-color); font-size: 1rem; font-weight: 600; padding: 0.5rem 1rem; margin-left: 0.5rem; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+.logo { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); }
+nav button { background: none; border: none; color: var(--subtle-text-color); font-size: 0.9rem; font-weight: 600; padding: 0.4rem 0.8rem; margin-left: 0.25rem; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
 nav button.active { background-color: var(--accent-color); color: white; }
 [data-theme="cyber"] nav button.active { color: #1e1e3f; }
 nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); }
@@ -71,219 +75,86 @@ nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); colo
 /* --- Stylowanie Kart (Glassmorphism) --- */
 .card { 
     background-color: var(--card-bg-color); 
-    border-radius: 16px; 
+    border-radius: 12px; 
     box-shadow: var(--shadow); 
-    padding: 1.5rem; 
-    margin-bottom: 1.5rem; 
+    padding: 1rem; 
+    margin-bottom: 1rem; 
     border: 1px solid var(--border-color);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 
-/* --- Karta Bilansu --- */
-.sticky-card { position: sticky; top: 1rem; z-index: 10; padding: 1rem; }
-#balance-card .balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; align-items: center; }
-#balance-card .balance-item label { font-size: 0.8rem; color: var(--subtle-text-color); margin-bottom: 0.1rem; }
-#balance-card .balance-item .value { font-size: 1.25rem; font-weight: 600; }
-#income-input { width: 100%; background-color: transparent; border: none; border-bottom: 1px solid var(--border-color); color: var(--text-color); font-size: 1.25rem; font-weight: 600; padding: 0.1rem 0; transition: border-color 0.2s; }
-#income-input:focus { outline: none; border-color: var(--accent-color); }
-#balance-value.positive, #forwarded-savings-value { color: var(--success-color); }
-#balance-value.negative { color: var(--danger-color); }
-#planned-expenses-value { color: var(--danger-color); }
+/* --- Karta Bilansu (wersja kompaktowa) --- */
+.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.75rem; }
+#balance-card .balance-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    grid-template-rows: auto auto auto;
+    grid-auto-flow: column;
+    gap: 0 1rem; 
+    align-items: center; 
+}
+#balance-card .balance-item { padding: 0.2rem 0; }
+#balance-card .balance-item label { font-size: 0.65rem; color: var(--subtle-text-color); margin-bottom: 0; }
+#balance-card .balance-item .value, #income-input { font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
+#income-input { padding: 0; height: auto; }
+#balance-card .balance-item:nth-child(5) { grid-row: 3; grid-column: 1 / -1; margin-top: 0.5rem; text-align: center; } /* Balans na całą szerokość */
 
-/* --- Tabela z wyglądem arkusza kalkulacyjnego --- */
-.table-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
-.date-navigation, .view-switcher { display: flex; align-items: center; gap: 0.5rem; }
+/* --- Tabela --- */
+.table-controls { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+.table-controls > div { display: flex; justify-content: center; }
+.date-navigation { grid-column: 1 / -1; }
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
-th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); transition: all 0.3s; }
-th:first-child, td:first-child { border-left: 1px solid var(--border-color); }
-th { font-size: 0.8rem; text-transform: uppercase; color: var(--subtle-text-color); background-color: rgba(255,255,255,0.05); border-top: 1px solid var(--border-color); }
+th, td { padding: 0.5rem; border: 1px solid var(--border-color); font-size: 0.8rem; }
+th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-color); background-color: rgba(255,255,255,0.05); }
 tbody tr:hover { background-color: rgba(255, 255, 255, 0.1); }
-td { cursor: pointer; }
-td.actions { text-align: center; width: 100px; }
-td input, td select { width: 100%; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--card-bg-color); color: var(--text-color); }
-
-.yearly-table td, .yearly-table th { padding: 0.5rem; font-size: 0.8rem; white-space: nowrap;}
+td.actions { width: 40px; text-align: center; }
+td input, td select { width: 100%; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--card-bg-color); color: var(--text-color); font-size: 0.8rem; }
 
 /* --- Przyciski --- */
-.btn { background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-.btn:hover { background-color: var(--primary-hover-color); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-.btn:disabled { background-color: var(--subtle-text-color); cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-accent { background-color: var(--accent-color); color: white; }
-.btn-accent:hover { background-color: var(--accent-hover-color); }
-.icon-btn { background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--subtle-text-color); font-size: 1.1rem; }
-.icon-btn:hover { color: var(--danger-color); }
+.btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; border-radius: 6px; }
 
-/* --- Formularze i panele --- */
-#inline-expense-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
-#inline-expense-form input, #inline-expense-form select, .dashboard-controls select { padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg-color); color: var(--text-color); font-size: 1rem; width: 100%; }
-#close-month-prompt { background-color: var(--card-bg-color); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center; border: 1px solid var(--border-color); }
-#close-month-prompt p { margin-bottom: 0.75rem; font-size: 0.8rem; color: var(--subtle-text-color); }
-#savings-input-container { display: flex; gap: 0.5rem; justify-content: center; align-items: center;}
-#savings-input-container input { padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); }
+/* --- Formularz dodawania wydatków (kompaktowy) --- */
+#inline-expense-form { display: grid; grid-template-columns: 2fr 1fr; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+#expense-description { grid-column: 1 / -1; }
+#expense-amount { grid-column: 1; }
+#expense-category { grid-column: 2; }
+#inline-expense-form button { grid-column: 1 / -1; }
+#inline-expense-form input, #inline-expense-form select { padding: 0.6rem; font-size: 0.9rem; }
 
-/* --- Stopka i Przełącznik Motywów --- */
-footer { text-align: center; padding: 2rem 0 1rem; color: var(--subtle-text-color); border-top: 1px solid var(--border-color); margin-top: 2rem; background: transparent; }
-#theme-selector { display: flex; justify-content: center; gap: 1rem; }
-.theme-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid rgba(255,255,255,0.5);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-}
-.theme-btn:hover {
-    transform: scale(1.1);
-}
-.theme-btn.active {
-    box-shadow: 0 0 0 3px var(--accent-color);
-    transform: scale(1.1);
-}
+/* --- Stopka --- */
+footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; }
 
 /* --- Dashboard --- */
-#dashboard-view { display: none; height: fit-content; }
-.dashboard-controls { grid-column: 1 / -1; display: flex; gap: 1rem; justify-content: flex-end; margin-bottom: -0.5rem; }
-.dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
-.kpi-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
-.kpi-tile { background: var(--card-bg-color); border-radius: 16px; padding: 1rem; text-align: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
-.kpi-tile .label { font-size: 0.8rem; color: var(--subtle-text-color); margin-bottom: 0.25rem; }
-.kpi-tile .value { font-size: 1.5rem; font-weight: 700; }
-.kpi-tile .comparison { font-size: 0.9rem; font-weight: 600; }
+.dashboard-grid, .kpi-row { gap: 1rem; }
+.kpi-tile { padding: 0.75rem; }
+.kpi-tile .label { font-size: 0.7rem; }
+.kpi-tile .value { font-size: 1.2rem; }
+.chart-container { min-height: 280px; }
+h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 
-.dashboard-table-container { grid-column: span 12; }
-.chart-container { grid-column: span 12; position: relative; height: 40vh; min-height: 350px; }
-.dashboard-table tr:last-child td { border-bottom: none; }
-.dashboard-table td:last-child { text-align: right; font-weight: 600; }
-.scrollable-table-body { max-height: 250px; overflow-y: auto; }
-.scrollable-table-body::-webkit-scrollbar { width: 8px; }
-.scrollable-table-body::-webkit-scrollbar-track { background: transparent; }
-.scrollable-table-body::-webkit-scrollbar-thumb { background-color: var(--subtle-text-color); border-radius: 4px; }
-
-#unclosed-months-alert {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 1rem 0;
-    font-size: 0.8rem;
-    color: var(--subtle-text-color);
-}
-
-.hidden { display: none; }
-
-/* Poprawka błędu tooltip w Chart.js */
-.chartjs-tooltip { opacity: 1; pointer-events: none; position: absolute; transform: translate(-50%, 0); transition: all .1s ease; }
-.chartjs-tooltip-key { display: inline-block; background: white; border-color: transparent; border-radius: 100%; margin-right: 5px; height: 10px; width: 10px; }
-
-
-/* --- RESPONSIVE DESIGN - STYLE DLA TELEFONÓW --- */
-@media (max-width: 768px) {
-    body {
-        font-size: 14px; /* Zmniejszenie bazowej czcionki */
-    }
-    #app-container {
-        padding: 0.5rem;
-    }
-    .card {
-        padding: 0.75rem;
-        margin-bottom: 1rem;
-    }
-    header {
-        margin-bottom: 1rem;
-        padding-bottom: 0.75rem;
-    }
-    .logo {
-        font-size: 1.5rem;
-    }
-    nav button {
-        font-size: 0.9rem;
-        padding: 0.4rem 0.8rem;
-        margin-left: 0.25rem;
-    }
-
-    /* Kompaktowy bilans */
-    #balance-card .balance-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-    }
-    #balance-card .balance-item {
-        padding: 0.25rem;
-    }
-    #balance-card .balance-item label {
-        font-size: 0.7rem;
-    }
-    #balance-card .balance-item .value, #income-input {
-        font-size: 1rem;
-    }
-
-    .table-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
-    .table-controls > div {
-        width: 100%;
-        display: flex;
-        justify-content: space-around;
-    }
-    .btn {
-        padding: 0.5rem 0.8rem;
-        font-size: 0.8rem;
-    }
-    
-    /* Kompaktowy formularz */
-    #inline-expense-form {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-    }
-    #inline-expense-form input, #inline-expense-form select {
-        padding: 0.6rem;
-        font-size: 0.9rem;
-    }
-
-    /* Kompaktowa tabela */
-    th, td {
-        padding: 0.4rem 0.5rem;
-        font-size: 0.75rem;
-    }
-    td.actions {
-        width: auto;
-    }
-    .icon-btn {
-        font-size: 1rem;
-    }
-
-    /* Kompaktowy dashboard */
-    .dashboard-grid, .kpi-row {
-        gap: 0.75rem;
-    }
-    .kpi-tile {
-        padding: 0.5rem;
-    }
-    .kpi-tile .label {
-        font-size: 0.65rem;
-    }
-    .kpi-tile .value {
-        font-size: 1.1rem;
-    }
-    .dashboard-table-container {
-        grid-column: span 12;
-    }
-    .chart-container {
-        min-height: 300px;
-    }
-    h3 {
-        font-size: 1.1rem;
-    }
-}
-
-@media (min-width: 992px) {
+/* --- Style dla Desktopu (nadpisują mobilne) --- */
+@media (min-width: 768px) {
+    body { font-size: 16px; }
+    #app-container { padding: 1.5rem; }
+    header { margin-bottom: 2rem; padding-bottom: 1rem; }
+    .logo { font-size: 1.8rem; }
+    nav button { font-size: 1rem; padding: 0.5rem 1rem; margin-left: 0.5rem; }
+    .card { padding: 1.5rem; margin-bottom: 1.5rem; }
+    #balance-card .balance-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); grid-auto-flow: unset; gap: 1rem; }
+    #balance-card .balance-item { padding: 0; }
+    #balance-card .balance-item:nth-child(5) { grid-row: unset; grid-column: unset; margin-top: 0; text-align: left; }
+    #balance-card .balance-item label { font-size: 0.8rem; }
+    #balance-card .balance-item .value { font-size: 1.25rem; }
+    .table-controls { grid-template-columns: auto 1fr auto; flex-direction: row; align-items: center; }
+    .date-navigation { grid-column: unset; }
+    #inline-expense-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; }
+    #expense-description, #expense-amount, #expense-category, #inline-expense-form button { grid-column: unset; }
+    th, td { padding: 0.75rem 1rem; font-size: 1rem; }
     .dashboard-table-container { grid-column: span 6; }
     .chart-container { grid-column: span 12; }
-     .chart-container.pie { grid-column: span 5; }
-     .chart-container.bar { grid-column: span 7; }
+    .chart-container.pie { grid-column: span 5; }
+    .chart-container.bar { grid-column: span 7; }
 }
 
