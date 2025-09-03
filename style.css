@@ -38,9 +38,9 @@ body {
 
 /* --- Globalne Resetowanie i Ustawienia Body --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { 
+html, body {
     height: 100%;
-    -webkit-tap-highlight-color: transparent; /* Usunięcie podświetlenia przy dotyku na iOS/Android */
+    -webkit-tap-highlight-color: transparent;
 }
 body {
     font-family: var(--font-family);
@@ -48,7 +48,7 @@ body {
     background-attachment: fixed;
     color: var(--text-color);
     line-height: 1.5;
-    font-size: 15px; /* Lepszy bazowy rozmiar dla mobile */
+    font-size: 15px;
 }
 
 /* --- Kontener Główny i Układy --- */
@@ -56,12 +56,12 @@ body {
 main { flex-grow: 1; }
 
 /* --- Nagłówek i Nawigacja --- */
-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 1rem; 
-    padding: 0.5rem 0; 
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
     border-bottom: 1px solid var(--border-color);
 }
 .logo { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); }
@@ -71,38 +71,38 @@ nav button.active { background-color: var(--accent-color); color: white; }
 nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); }
 
 /* --- Stylowanie Kart (Glassmorphism) --- */
-.card { 
-    background-color: var(--card-bg-color); 
-    border-radius: 12px; 
-    box-shadow: var(--shadow); 
-    padding: 1rem; 
-    margin-bottom: 1rem; 
+.card {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1rem;
+    margin-bottom: 1rem;
     border: 1px solid var(--border-color);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 
-/* --- Karta Bilansu (MOBILE) --- */
-.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.75rem; }
-#balance-card .balance-grid { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; /* Zawsze 2 kolumny na mobile */
-    gap: 0.5rem 1rem; 
-    align-items: center; 
+/* --- POPRAWKA 1: Karta Bilansu (MOBILE) --- */
+.sticky-card { position: sticky; top: 0.5rem; z-index: 10; padding: 0.5rem 0.75rem; } /* Zmniejszony padding */
+#balance-card .balance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem 1rem; /* Zmniejszony odstęp pionowy */
+    align-items: center;
 }
-#balance-card .balance-item { padding: 0.2rem 0; }
-#balance-card .balance-item label { font-size: 0.7rem; color: var(--subtle-text-color); margin-bottom: 0; display: block; }
-#balance-card .balance-item .value, #income-input { font-size: 1rem; font-weight: 600; line-height: 1.2; }
+#balance-card .balance-item { padding: 0.1rem 0; }
+#balance-card .balance-item label { font-size: 0.65rem; color: var(--subtle-text-color); display: block; } /* Mniejsza etykieta */
+#balance-card .balance-item .value, #income-input { font-size: 0.9rem; font-weight: 600; line-height: 1.2; } /* Mniejsza czcionka wartości */
 #income-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border-color); color: var(--text-color); padding: 0.1rem 0; }
-#balance-card .balance-item-full { grid-column: 1 / -1; margin-top: 0.5rem; text-align: center; background: rgba(0,0,0,0.1); padding: 0.5rem; border-radius: 8px; }
+#balance-card .balance-item-full { grid-column: 1 / -1; margin-top: 0.25rem; text-align: center; background: rgba(0,0,0,0.1); padding: 0.25rem; border-radius: 8px; }
 
 /* --- Kontrolki tabeli (MOBILE) --- */
-.table-controls { 
-    display: flex; 
-    flex-wrap: wrap; /* Pozwala elementom zawijać się do nowej linii */
-    justify-content: space-between; 
-    gap: 0.75rem; 
-    margin-bottom: 1rem; 
+.table-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
     align-items: center;
 }
 .date-navigation { width: 100%; display: flex; justify-content: space-between; align-items: center; order: 1; }
@@ -124,21 +124,18 @@ nav button:not(.active):hover { background-color: rgba(255, 255, 255, 0.1); colo
     width: 100%;
 }
 
-/* --- Przyciski --- */
-.btn { padding: 0.6rem 1rem; font-size: 0.85rem; border-radius: 8px; border: none; cursor: pointer; background-color: var(--primary-color); color: white; font-weight: 600; transition: background-color 0.2s; }
+/* --- POPRAWKA 2: Przyciski --- */
+.btn { padding: 0.5rem 0.9rem; font-size: 0.8rem; border-radius: 8px; border: none; cursor: pointer; background-color: var(--primary-color); color: white; font-weight: 600; transition: background-color 0.2s; }
 .btn-accent { background-color: var(--accent-color); }
 .btn.active { background-color: var(--accent-color); }
 .icon-btn { background: none; border: none; cursor: pointer; padding: 0.25rem; color: var(--subtle-text-color); font-size: 1.1rem; }
 .icon-btn:hover { color: var(--danger-color); }
 
-/* --- Tabela --- */
+/* --- Tabela (Desktop) --- */
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
-th, td { padding: 0.6rem; border: 1px solid var(--border-color); font-size: 0.85rem; }
+th, td { padding: 0.6rem; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
 th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-color); background-color: rgba(255,255,255,0.05); }
-tbody tr:hover { background-color: rgba(255, 255, 255, 0.1); }
-td.actions { width: 40px; text-align: center; }
-td input, td select { width: 100%; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; background-color: var(--card-bg-color); color: var(--text-color); font-size: 0.8rem; }
 
 /* --- Dashboard (Mobile) --- */
 .dashboard-grid, .kpi-row { gap: 1rem; }
@@ -147,7 +144,8 @@ td input, td select { width: 100%; padding: 0.25rem; border: 1px solid var(--bor
 .kpi-tile { padding: 0.75rem; text-align: center; }
 .kpi-tile .label { font-size: 0.75rem; }
 .kpi-tile .value { font-size: 1.2rem; font-weight: bold; }
-.chart-container { min-height: 300px; }
+/* --- POPRAWKA 4: Dashboard scroll --- */
+.chart-container { min-height: 280px; } /* Zmniejszona minimalna wysokość */
 h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
 .dashboard-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .dashboard-controls select { flex-grow: 1; }
@@ -160,6 +158,47 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
 .theme-btn.active { box-shadow: 0 0 0 3px var(--accent-color); transform: scale(1.1); }
 .hidden { display: none !important; }
 
+/* --- POPRAWKA 3: Tabela w widoku mobilnym (do 767px) --- */
+@media (max-width: 767px) {
+    #expenses-table thead {
+        display: none; /* Ukryj oryginalne nagłówki */
+    }
+    #expenses-table, #expenses-table tbody, #expenses-table tr, #expenses-table td {
+        display: block; /* Zmień elementy tabeli na bloki */
+        width: 100%;
+    }
+    #expenses-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    #expenses-table td {
+        display: flex;
+        justify-content: space-between; /* Etykieta po lewej, wartość po prawej */
+        text-align: right; /* Wyrównaj wartość do prawej */
+        padding: 0.4rem 0.2rem;
+        border: none;
+        border-bottom: 1px dashed var(--border-color);
+    }
+    #expenses-table tr td:last-child {
+        border-bottom: none;
+    }
+    #expenses-table td::before {
+        content: attr(data-field); /* Użyj atrybutu data-field jako etykiety */
+        font-weight: bold;
+        text-align: left;
+        color: var(--subtle-text-color);
+        text-transform: capitalize;
+    }
+    #expenses-table td[data-field="paid"], #expenses-table td[data-field="actions"] {
+        justify-content: center; /* Wyśrodkuj checkbox i przycisk usuwania */
+    }
+    #expenses-table td[data-field="paid"]::before, #expenses-table td[data-field="actions"]::before {
+        margin-right: auto; /* Przesuń etykietę do lewej */
+    }
+}
+
 /* --- Style dla Desktopu (nadpisują mobilne) --- */
 @media (min-width: 768px) {
     body { font-size: 16px; }
@@ -168,30 +207,28 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     .logo { font-size: 1.8rem; }
     nav button { font-size: 1rem; padding: 0.5rem 1rem; margin-left: 0.5rem; }
     .card { padding: 1.5rem; margin-bottom: 1.5rem; }
-
-    /* Układ bilansu na desktop */
+    
+    .sticky-card { padding: 1rem; }
     #balance-card .balance-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-    #balance-card .balance-item-full { grid-column: unset; text-align: left; background: none; padding: 0.2rem 0; }
+    #balance-card .balance-item-full { grid-column: unset; text-align: left; background: none; padding: 0; }
     #balance-card .balance-item label { font-size: 0.8rem; }
     #balance-card .balance-item .value { font-size: 1.25rem; }
-
-    /* Układ kontrolek na desktop */
+    
     .table-controls { flex-wrap: nowrap; justify-content: space-between; }
     .date-navigation { width: auto; order: 2; }
     .view-switcher { order: 1; }
     .action-buttons { order: 3; }
     
-    /* Układ formularzy na desktop */
     #inline-expense-form { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: center; }
     #savings-input-container { flex-direction: row; }
-
-    /* Tabela na desktop */
-    th, td { padding: 0.75rem 1rem; font-size: 1rem; }
     
-    /* Dashboard na desktop */
+    th, td { padding: 0.75rem 1rem; font-size: 1rem; border-bottom: 1px solid var(--border-color); }
+    th { border-top: 1px solid var(--border-color); }
+
     .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
     .kpi-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
     .dashboard-table-container { grid-column: span 6; }
     .chart-container.pie { grid-column: span 5; }
     .chart-container.bar { grid-column: span 7; }
+    .chart-container { min-height: 350px; }
 }
