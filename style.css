@@ -162,74 +162,95 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
 /* --- Tabela w widoku mobilnym (do 767px) --- */
 @media (max-width: 767px) {
     #expenses-table thead {
-        display: none;
+        display: none; /* Ukryj nagłówki */
     }
-    #expenses-table, #expenses-table tbody, #expenses-table tr {
-        display: block;
+    #expenses-table, #expenses-table tbody, #expenses-table tr, #expenses-table td {
+        display: block; /* Wszystko jako blok, aby zarządzać układem */
         width: 100%;
     }
     #expenses-table tr {
-        margin-bottom: 0.4rem; 
+        margin-bottom: 0.4rem; /* Odstęp między wierszami */
         border: 1px solid var(--border-color);
         border-radius: 8px;
-        padding: 0.4rem 0.5rem; 
+        padding: 0.4rem 0.5rem; /* Padding wewnętrzny karty */
         position: relative;
     }
-    #expenses-table td {
+    
+    /* Ukryj domyślne td::before */
+    #expenses-table td::before {
+        display: none; 
+    }
+
+    /* Główne style dla nowej struktury */
+    #expenses-table td[data-field="summary"] {
+        padding: 0; /* Usuń domyślny padding td */
+        border-bottom: none; /* Usuń dolną linię dla summary */
+    }
+
+    .expense-summary-main {
         display: flex;
         justify-content: space-between;
-        text-align: right;
-        padding: 0.1rem 0; 
-        border: none;
+        align-items: baseline; /* Wyrównaj tekst, ale pozwól kwocie być wyżej */
+        padding-bottom: 0.2rem;
         border-bottom: 1px dashed var(--border-color);
-        font-size: 0.85rem;
     }
-    #expenses-table tr td:last-child {
-        border-bottom: none;
+    .expense-description {
+        font-weight: 600;
+        color: var(--text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 60%; /* Ogranicz szerokość opisu */
+        font-size: 0.9rem;
     }
-    #expenses-table td[data-field="akcje"] {
+    .expense-amount {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--accent-color);
+    }
+
+    .expense-summary-details {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem; /* Mniejsza czcionka dla detali */
+        color: var(--subtle-text-color);
+        padding-top: 0.2rem;
+    }
+    .expense-category {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 50%;
+    }
+    .expense-date {
+        text-align: right;
+    }
+
+    /* Akcje i opłacone */
+    #expenses-table td[data-field="actions-paid"] {
         position: absolute;
-        top: 0.4rem; 
-        left: 0.5rem;
-        width: auto;
-        border-bottom: none;
-        padding: 0;
-        justify-content: flex-start;
-        font-size: 1.2rem;
-    }
-    #expenses-table td[data-field="opłacone"] {
-        position: absolute;
-        top: 0.4rem; 
+        top: 0.4rem;
         right: 0.5rem;
         width: auto;
         border-bottom: none;
         padding: 0;
-        justify-content: flex-end;
+        display: flex; /* Flexbox dla wyrównania ikon i checkboxa */
+        align-items: center;
+        gap: 0.5rem; /* Odstęp między koszem a checkboxem */
     }
-    #expenses-table td[data-field="opłacone"]::before,
-    #expenses-table td[data-field="akcje"]::before {
-        display: none;
+    .actions-paid-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
-    #expenses-table td[data-field="opłacone"] input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
+    #expenses-table td[data-field="actions-paid"] .icon-btn {
+        font-size: 1rem; /* Mniejszy kosz */
+        padding: 0.1rem;
+    }
+    #expenses-table td[data-field="actions-paid"] input[type="checkbox"] {
+        width: 18px; /* Mniejszy checkbox */
+        height: 18px;
         margin: 0;
-    }
-    #expenses-table td[data-field="opis"],
-    #expenses-table td[data-field="kwota"],
-    #expenses-table td[data-field="kategoria"],
-    #expenses-table td[data-field="data"] {
-        margin-top: 1.5rem; 
-        padding-top: 0.1rem;
-    }
-    #expenses-table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        text-align: left;
-        color: var(--subtle-text-color);
-        text-transform: capitalize;
-        margin-right: 0.5rem;
-        flex-shrink: 0;
     }
 }
 
@@ -258,6 +279,73 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     
     th, td { padding: 0.75rem 1rem; font-size: 1rem; border-bottom: 1px solid var(--border-color); }
     th { border-top: 1px solid var(--border-color); }
+
+    /* Przywróć standardową tabelę dla desktopu */
+    #expenses-table thead { display: table-header-group; }
+    #expenses-table tr { display: table-row; margin-bottom: 0; padding: 0; border: none; }
+    #expenses-table td {
+        display: table-cell;
+        justify-content: flex-start;
+        text-align: left;
+        padding: 0.6rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.85rem;
+        position: static; /* Usuń pozycjonowanie absolutne */
+    }
+    #expenses-table td[data-field="summary"] { border-bottom: 1px solid var(--border-color); } /* Przywróć border */
+    #expenses-table td[data-field="actions-paid"] { border-bottom: 1px solid var(--border-color); text-align: right;} /* Przywróć border i wyrównanie */
+    
+    .expense-summary-main, .expense-summary-details, .actions-paid-wrapper { display: contents; } /* Ukryj divy, aby dane były bezpośrednio w td */
+    .expense-description, .expense-amount, .expense-category, .expense-date { display: contents; } /* Ukryj spany */
+    
+    .expense-description { grid-column: 1; }
+    .expense-amount { grid-column: 2; }
+    .expense-category { grid-column: 3; }
+    .expense-date { grid-column: 4; }
+    .actions-paid-cell { grid-column: 5; } /* Musimy to ręcznie ustawić, bo structure się zmienia */
+
+
+    /* Nadpisanie dla desktopu, aby zachować strukturę tabeli */
+    #expenses-table tbody tr {
+        display: table-row; /* Przywróć domyślny display dla wierszy */
+    }
+
+    #expenses-table tbody tr > td {
+        border-bottom: 1px solid var(--border-color); /* Przywróć dolne linie w td */
+        padding: 0.6rem; /* Standardowy padding */
+        position: static; /* Usuń pozycjonowanie absolutne */
+        display: table-cell; /* Przywróć wyświetlanie jako komórka tabeli */
+        text-align: left; /* Domyślne wyrównanie */
+    }
+
+    #expenses-table tbody tr > td[data-field="summary"] {
+        /* Ta komórka będzie teraz przechowywać opis, kwotę, kategorię i datę */
+        /* Musimy je ponownie rozdzielić na osobne kolumny w widoku desktop */
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr; /* Odpowiednie szerokości kolumn */
+        gap: 0; /* Brak odstępów między elementami w tej komórce */
+        padding: 0; /* Usuń padding z td summary */
+        align-items: center;
+    }
+
+    #expenses-table tbody tr > td[data-field="summary"] > div {
+        display: contents; /* Umożliwia manipulowanie zawartością bezpośrednio w gridzie td */
+    }
+
+    .expense-description { grid-column: 1; padding: 0.6rem; }
+    .expense-amount { grid-column: 2; padding: 0.6rem; text-align: right; }
+    .expense-category { grid-column: 3; padding: 0.6rem; }
+    .expense-date { grid-column: 4; padding: 0.6rem; }
+
+    #expenses-table tbody tr > td[data-field="actions-paid"] {
+        text-align: right; /* Akcje na prawo */
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    #expenses-table td[data-field="actions-paid"] .icon-btn { font-size: 1.1rem; padding: 0.25rem; }
+    #expenses-table td[data-field="actions-paid"] input[type="checkbox"] { width: 20px; height: 20px; }
 
     .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
     .kpi-row { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
