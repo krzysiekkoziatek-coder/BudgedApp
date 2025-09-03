@@ -100,35 +100,36 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const renderMonthlyTable = () => {
-        // Zawsze pokazuj nagłówki w HTML, ale CSS je ukryje na mobile
-        tableHead.innerHTML = `<tr><th>Opis</th><th>Kwota</th><th>Kategoria</th><th>Data</th><th>Akcje/Opłacone</th></tr>`;
+        tableHead.innerHTML = `<tr><th>Opis</th><th>Kwota</th><th>Kategoria</th><th>Data</th><th>Akcje</th><th>Opłacone</th></tr>`;
         
         const monthKey = getKeyForDate(currentDate);
         const monthExpenses = expenses.filter(e => e.date.startsWith(monthKey)).sort((a,b) => new Date(b.date) - new Date(a.date));
         
-        // NOWA STRUKTURA HTML DLA WIERSZA
+        // ZUPEŁNIE NOWA, PROSTSZA STRUKTURA HTML DLA WIERSZA
         tableBody.innerHTML = monthExpenses.map(expense => `
             <tr data-id="${expense.id}" class="expense-row">
-                <td data-field="summary">
-                    <div class="expense-summary-main">
-                        <span class="expense-description">${expense.description}</span>
-                        <span class="expense-amount">${formatCurrency(expense.amount)}</span>
-                    </div>
-                    <div class="expense-summary-details">
-                        <span class="expense-category">${expense.category}</span>
-                        <span class="expense-date">${expense.date}</span>
-                    </div>
-                </td>
-                <td data-field="actions-paid" class="actions-paid-cell">
-                    <div class="actions-paid-wrapper">
-                        <button class="icon-btn delete-btn">🗑️</button>
-                        <input type="checkbox" ${expense.paid ? 'checked' : ''}>
+                <td class="expense-cell">
+                    <div class="expense-wrapper">
+                        <div class="expense-info">
+                            <div class="expense-main">
+                                <span class="expense-description">${expense.description}</span>
+                                <span class="expense-amount">${formatCurrency(expense.amount)}</span>
+                            </div>
+                            <div class="expense-details">
+                                <span class="expense-category">${expense.category}</span>
+                                <span class="expense-date">${expense.date}</span>
+                            </div>
+                        </div>
+                        <div class="expense-actions">
+                            <button class="icon-btn delete-btn">🗑️</button>
+                            <input type="checkbox" ${expense.paid ? 'checked' : ''}>
+                        </div>
                     </div>
                 </td>
             </tr>`).join('');
             
         if (monthExpenses.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
         }
     };
     
@@ -420,15 +421,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     tableBody.addEventListener('dblclick', (e) => {
-        if (window.innerWidth < 768) return; // Wyłącz edycję na mobile
+        if (window.innerWidth < 768) return;
 
-        // Logika edycji dla desktopu (musi zostać dostosowana do nowej struktury HTML)
-        const cell = e.target.closest('td');
-        const summaryCell = e.target.closest('[data-field="summary"]');
-        if (!cell || cell.dataset.field === 'actions-paid') return;
+        const descriptionElement = e.target.closest('.expense-description');
+        const amountElement = e.target.closest('.expense-amount');
+        const categoryElement = e.target.closest('.expense-category');
+        const dateElement = e.target.closest('.expense-date');
+
+        const row = e.target.closest('tr');
+        if (!row) return;
+        const id = row.dataset.id;
+        const expense = expenses.find(exp => String(exp.id) === id);
+        if (!expense) return;
+
+        let field;
+        let targetElement;
+
+        if (descriptionElement) { field = 'description'; targetElement = descriptionElement; }
+        else if (amountElement) { field = 'amount'; targetElement = amountElement; }
+        else if (categoryElement) { field = 'category'; targetElement = categoryElement; }
+        else if (dateElement) { field = 'date'; targetElement = dateElement; }
+        else { return; }
         
-        // Ta logika wymagałaby głębszej przebudowy, na razie ją pomijamy, aby nie psuć
-        // edycji na desktopie przy tak zmienionej strukturze.
+        const input = field === 'category' ? document.createElement('select') : document.createElement('input');
+        
+        if (field === 'category') {
+            CATEGORIES.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = cat;
+                if(cat === expense.category) opt.selected = true;
+                input.appendChild(opt);
+            });
+        } else {
+            input.type = field === 'amount' ? 'number' : (field === 'date' ? 'date' : 'text');
+            input.value = field === 'amount' ? expense.amount : expense[field];
+        }
+
+        targetElement.innerHTML = '';
+        targetElement.appendChild(input);
+        input.focus();
+        
+        const saveEdit = () => {
+            expense[field] = field === 'amount' ? (parseFloat(input.value) || 0) : input.value;
+            saveData();
+            render();
+        };
+
+        input.addEventListener('blur', saveEdit);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') input.blur(); });
     });
     
     const savingsAmountInput = document.getElementById('savings-amount');
