@@ -1,4 +1,4 @@
-const CACHE_NAME = 'acl-budget-cache-v4'; // ZMIANA WERSJI
+const CACHE_NAME = 'acl-budget-cache-v5'; // ZMIANA WERSJI
 const urlsToCache = [
   '/',
   '/index.html',
@@ -45,5 +45,6 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
 
 
