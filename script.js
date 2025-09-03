@@ -103,16 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
         tableHead.parentElement.classList.remove('yearly-table');
         document.getElementById('copy-expenses-btn').style.display = 'inline-block';
         tableHead.innerHTML = `<tr><th>Opis</th><th>Kwota</th><th>Kategoria</th><th>Data</th><th>Opłacone</th><th class="actions">Akcje</th></tr>`;
-        
+    
         const monthKey = getKeyForDate(currentDate);
         const monthExpenses = expenses.filter(e => e.date.startsWith(monthKey)).sort((a,b) => new Date(b.date) - new Date(a.date));
-        
+    
+        // ZAKTUALIZOWANA CZĘŚĆ: Dodano atrybuty data-field do każdej komórki <td>
         tableBody.innerHTML = monthExpenses.map(expense => `
             <tr data-id="${expense.id}">
-                <td data-field="description">${expense.description}</td> <td data-field="amount">${formatCurrency(expense.amount)}</td>
-                <td data-field="category">${expense.category}</td> <td data-field="date">${expense.date}</td>
-                <td data-field="paid"><input type="checkbox" ${expense.paid ? 'checked' : ''}></td>
-                <td class="actions"><button class="icon-btn delete-btn">🗑️</button></td>
+                <td data-field="opis">${expense.description}</td>
+                <td data-field="kwota">${formatCurrency(expense.amount)}</td>
+                <td data-field="kategoria">${expense.category}</td>
+                <td data-field="data">${expense.date}</td>
+                <td data-field="opłacone"><input type="checkbox" ${expense.paid ? 'checked' : ''}></td>
+                <td data-field="akcje" class="actions"><button class="icon-btn delete-btn">🗑️</button></td>
             </tr>`).join('');
         if (monthExpenses.length === 0) tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">Brak wydatków.</td></tr>`;
     };
@@ -407,6 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     tableBody.addEventListener('dblclick', (e) => {
+        if (window.innerWidth < 768) return; // Wyłącz edycję na mobile
+
         const cell = e.target.closest('td');
         if (!cell || cell.classList.contains('actions') || cell.dataset.field === 'paid' || cell.querySelector('input')) return;
         const field = cell.dataset.field;
