@@ -144,9 +144,8 @@ th { font-size: 0.7rem; text-transform: uppercase; color: var(--subtle-text-colo
 .kpi-tile { padding: 0.75rem; text-align: center; }
 .kpi-tile .label { font-size: 0.75rem; }
 .kpi-tile .value { font-size: 1.2rem; font-weight: bold; }
-/* --- POPRAWKA: Dashboard scroll i rozmiar wykresów --- */
-.chart-container { min-height: 220px; max-height: 300px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 1rem; } /* Bardziej kompaktowe wysokości */
-.chart-container canvas { height: 100% !important; width: 100% !important; } /* Upewnij się, że canvas wypełnia kontener */
+.chart-container { min-height: 220px; max-height: 300px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 1rem; }
+.chart-container canvas { height: 100% !important; width: 100% !important; }
 
 h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
 .dashboard-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -163,14 +162,14 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
 /* --- Tabela w widoku mobilnym (do 767px) --- */
 @media (max-width: 767px) {
     #expenses-table thead {
-        display: none; /* Ukryj oryginalne nagłówki */
+        display: none;
     }
     #expenses-table, #expenses-table tbody, #expenses-table tr {
-        display: block; /* Zmień elementy tabeli na bloki */
+        display: block;
         width: 100%;
     }
     #expenses-table tr {
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem; /* POPRAWKA: Zmniejszony odstęp między kartami */
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 0.5rem;
@@ -180,52 +179,48 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
         display: flex;
         justify-content: space-between;
         text-align: right;
-        padding: 0.25rem 0.2rem; /* Jeszcze mniejsze paddingi */
+        padding: 0.1rem 0.2rem; /* POPRAWKA: Mniejszy odstęp pionowy w komórce */
         border: none;
         border-bottom: 1px dashed var(--border-color);
-        font-size: 0.85rem; /* Mniejsza czcionka */
+        font-size: 0.85rem;
     }
     #expenses-table tr td:last-child {
         border-bottom: none;
     }
-
-    /* POPRAWKA: Pozycjonowanie kosza i checkboxa - teraz w "nagłówku" karty */
     #expenses-table td[data-field="akcje"] {
         position: absolute;
         top: 0.5rem;
-        left: 0.5rem; /* Kosz po lewej */
+        left: 0.5rem;
         width: auto;
         border-bottom: none;
         padding: 0;
-        justify-content: flex-start; /* Wyrównaj do lewej */
+        justify-content: flex-start;
         font-size: 1.2rem;
     }
     #expenses-table td[data-field="opłacone"] {
         position: absolute;
         top: 0.5rem;
-        right: 0.5rem; /* Checkbox po prawej */
+        right: 0.5rem;
         width: auto;
         border-bottom: none;
         padding: 0;
-        justify-content: flex-end; /* Wyrównaj do prawej */
+        justify-content: flex-end;
     }
     #expenses-table td[data-field="opłacone"]::before,
     #expenses-table td[data-field="akcje"]::before {
-        display: none; /* Ukryj etykiety dla tych pól, bo ich pozycja jest oczywista */
+        display: none;
     }
     #expenses-table td[data-field="opłacone"] input[type="checkbox"] {
         width: 20px;
         height: 20px;
         margin: 0;
     }
-
-    /* Etykiety dla pozostałych pól - zaczynają się niżej, nie kolidują z akcjami */
     #expenses-table td[data-field="opis"],
     #expenses-table td[data-field="kwota"],
     #expenses-table td[data-field="kategoria"],
     #expenses-table td[data-field="data"] {
-        margin-top: 1.8rem; /* Odsuń tekst od góry, aby zrobić miejsce dla akcji */
-        padding-top: 0.25rem; /* Zachowaj mały padding */
+        margin-top: 1.6rem; /* POPRAWKA: Mniejszy odstęp od góry */
+        padding-top: 0.1rem;
     }
     #expenses-table td::before {
         content: attr(data-label);
@@ -269,5 +264,5 @@ footer { padding: 1.5rem 0 1rem; margin-top: 1.5rem; text-align: center; color: 
     .dashboard-table-container { grid-column: span 6; }
     .chart-container.pie { grid-column: span 5; }
     .chart-container.bar { grid-column: span 7; }
-    .chart-container { min-height: 350px; } /* Większa min-height dla desktopu */
+    .chart-container { min-height: 350px; }
 }
