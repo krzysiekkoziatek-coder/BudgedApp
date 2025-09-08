@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACL - Aplikacja Budżetowa</title>
+    <link rel="stylesheet" href="style.css?v=2.3">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.28.0/dist/umd/index.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js'></script>
+    <link rel="manifest" href="manifest.json">
+</head>
+<body data-theme="cyber">
+    <div id="auth-container">
+        <div class="auth-box card">
+            <div class="logo">ACL</div>
+            <h2>Logowanie</h2>
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Hasło" required>
+            <button id="login-button" class="btn btn-accent">Zaloguj</button>
+            <h2 class="auth-header">Rejestracja</h2>
+            <input type="email" id="register-email" placeholder="Email" required>
+            <input type="password" id="register-password" placeholder="Hasło" required>
+            <button id="register-button" class="btn">Zarejestruj</button>
+            <p id="auth-error"></p>
+        </div>
+    </div>
+    
+    <div id="app-container" style="display: none;">
+        <header>
+            <div class="logo">ACL</div>
+            <nav>
+                <button id="nav-budget" class="active">Budżet</button>
+                <button id="nav-dashboard">Dashboard</button>
+                <button id="nav-todo">Checklista</button>
+                <button id="nav-calendar">Kalendarz</button>
+            </nav>
+            <div class="user-actions">
+                <span id="user-email-display"></span>
+                <button id="logout-button" class="btn">Wyloguj</button>
+            </div>
+        </header>
+        
+        <main>
+            <div id="budget-view">
+                <div id="balance-card" class="card sticky-card">
+                    <div class="balance-grid">
+                        <div class="balance-item">
+                            <label for="income-input">Przychód</label>
+                            <div class="income-input-wrapper"> <input type="number" id="income-input" placeholder="Wpisz..."> </div>
+                        </div>
+                         <div class="balance-item">
+                            <label>Oszczędności (pop. m-c)</label>
+                            <div id="forwarded-savings-value" class="value">0.00 zł</div>
+                        </div>
+                        <div class="balance-item">
+                            <label>Opłacone wydatki</label>
+                            <div id="total-paid-value" class="value">0.00 zł</div>
+                        </div>
+                        <div class="balance-item">
+                            <label>Zaplanowane wydatki</label>
+                            <div id="planned-expenses-value" class="value">0.00 zł</div>
+                        </div>
+                        <div class="balance-item balance-item-full">
+                            <label>Rzeczywisty bilans</label>
+                            <div id="balance-value" class="value">0.00 zł</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="table-card" class="card">
+                    <div class="table-controls">
+                        <div class="view-switcher">
+                            <button id="monthly-view-btn" class="btn active">Miesiąc</button>
+                            <button id="yearly-view-btn" class="btn">Rok</button>
+                        </div>
+                        <div class="date-navigation">
+                            <button id="prev-date-btn" class="btn">&lt;</button>
+                            <span id="current-date-display"></span>
+                            <button id="next-date-btn" class="btn">&gt;</button>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="copy-expenses-btn" class="btn">Kopia wydatków</button>
+                        </div>
+                    </div>
+                    <div id="close-month-prompt" class="hidden">
+                        <p>Wpisz kwotę, która Ci pozostała. Zostanie ona doliczona do oszczędności w kolejnym miesiącu.</p>
+                        <div id="savings-input-container">
+                            <input type="number" id="savings-amount" placeholder="Wpisz kwotę oszczędności">
+                            <button id="save-savings-yes" class="btn btn-accent" disabled>Zapisz</button>
+                            <button id="save-savings-no" class="btn">Anuluj</button>
+                        </div>
+                    </div>
+                    <form id="inline-expense-form">
+                        <input type="text" id="expense-description" placeholder="Opis wydatku" required>
+                        <input type="number" id="expense-amount" placeholder="Kwota" step="0.01" required>
+                        <div class="category-wrapper">
+                            <select id="expense-category" required></select>
+                            <button type="button" id="manage-categories-btn" class="btn" title="Zarządzaj kategoriami">⚙️</button>
+                        </div>
+                        <button type="submit" class="btn btn-accent">Dodaj</button>
+                    </form>
+                    <div class="table-wrapper">
+                        <table id="expenses-table"> <thead></thead> <tbody></tbody> </table>
+                    </div>
+                    <div class="card-footer-actions">
+                        <button id="close-month-btn" class="btn btn-accent"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboard-view" style="display: none;">
+                 <div class="dashboard-grid">
+                     <div class="dashboard-controls">
+                         <div class="custom-select-wrapper">
+                            <select id="dashboard-month-select"></select>
+                         </div>
+                         <div class="custom-select-wrapper">
+                            <select id="dashboard-year-select"></select>
+                         </div>
+                         <div class="view-switcher">
+                             <button id="dashboard-monthly-btn" class="btn active">Miesiąc</button>
+                             <button id="dashboard-yearly-btn" class="btn">Rok</button>
+                         </div>
+                     </div>
+                     <div class="kpi-row">
+                         <div class="kpi-tile"><div class="label">Suma Przychodów</div><div class="value" id="kpi-total-income">0.00</div></div>
+                         <div class="kpi-tile"><div class="label">Suma Wydatków</div><div class="value" id="kpi-total-expenses">0.00</div></div>
+                         <div class="kpi-tile"><div class="label">Bilans</div><div class="value" id="kpi-balance">0.00</div></div>
+                         <div class="kpi-tile"><div class="label" id="kpi-comparison-label">Porównanie wydatków</div><div class="value" id="kpi-comparison">N/A</div></div>
+                     </div>
+                     <div class="dashboard-table-container card">
+                         <h3>Podsumowanie Kategorii</h3>
+                         <div class="scrollable-table-body"><table class="dashboard-table"><tbody id="category-summary-table"></tbody></table></div>
+                     </div>
+                     <div class="dashboard-table-container card">
+                         <h3>Podsumowanie Wydatków</h3>
+                         <div class="scrollable-table-body"><table class="dashboard-table"><tbody id="expense-summary-table"></tbody></table></div>
+                     </div>
+                     <div class="chart-container card pie">
+                         <h3>Struktura Wydatków</h3>
+                         <canvas id="category-pie-chart"></canvas>
+                     </div>
+                     <div class="chart-container card bar">
+                         <h3 id="bar-chart-title">Wydatki</h3>
+                         <canvas id="history-bar-chart"></canvas>
+                     </div>
+                      <div id="unclosed-months-alert" class="hidden"></div>
+                 </div>
+            </div>
+
+            <div id="todo-view" style="display: none;">
+                <div class="card">
+                    <h2>Checklista zadań domowych</h2>
+                    <form id="todo-form">
+                        <input type="text" id="todo-input" placeholder="Wpisz nowe zadanie..." required>
+                        <label class="todo-date-picker-label" title="Wybierz termin">
+                            📅
+                            <input type="date" id="todo-date-input">
+                        </label>
+                        <button type="submit" class="btn btn-accent">Dodaj</button>
+                    </form>
+                    <div class="todo-form-footer">
+                        <span id="todo-date-display"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <ul id="todo-list"></ul>
+                </div>
+            </div>
+
+            <div id="calendar-view" style="display: none;">
+                <div id="calendar-wrapper">
+                    <div id="calendar" class="card"></div>
+                    <button id="add-event-for-date-btn" class="btn btn-accent hidden">Dodaj wydarzenie</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div id="theme-selector">
+                <button class="theme-btn" data-theme="ocean" title="Ocean" style="background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);"></button>
+                <button class="theme-btn" data-theme="cyber" title="Cyber Punk" style="background-image: linear-gradient(120deg, #240b36 0%, #0d0d2b 100%);"></button>
+            </div>
+        </footer>
+    </div>
+    
+    <div id="category-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h3>Zarządzaj kategoriami</h3>
+            <div class="add-category-section">
+                <input type="text" id="new-category-name" placeholder="Wpisz nową kategorię...">
+                <button id="save-category-btn" class="btn btn-accent">Dodaj</button>
+            </div>
+            <hr class="modal-divider">
+            <ul id="modal-category-list"></ul>
+            <div class="modal-actions">
+                <button id="close-modal-btn" class="btn">Zamknij</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h3 id="confirm-modal-title">Czy na pewno?</h3>
+            <p id="confirm-modal-text"></p>
+            <div class="modal-actions">
+                <button id="confirm-cancel-btn" class="btn">Anuluj</button>
+                <button id="confirm-ok-btn" class="btn btn-accent">Tak, usuń</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="event-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h3 id="event-modal-title">Nowe wydarzenie</h3>
+            <input type="text" id="event-title-input" placeholder="Tytuł wydarzenia...">
+            <div class="event-datetime">
+                <div class="datetime-group">
+                    <label for="event-start-date-input">Początek</label>
+                    <div class="inputs">
+                        <input type="date" id="event-start-date-input">
+                        <input type="time" id="event-start-time-input">
+                    </div>
+                </div>
+                <div class="datetime-group">
+                    <label for="event-end-date-input">Koniec</label>
+                    <div class="inputs">
+                        <input type="date" id="event-end-date-input">
+                        <input type="time" id="event-end-time-input">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="delete-event-btn" class="btn" style="background-color: var(--danger-color); margin-right: auto;">Usuń</button>
+                <button id="close-event-modal-btn" class="btn">Anuluj</button>
+                <button id="save-event-btn" class="btn btn-accent">Zapisz</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_nFbq_9cp9g6yVg08Opf8bB5ua6f1Rw",
+            authDomain: "aplikacjabudzetowa-424df.firebaseapp.com",
+            projectId: "aplikacjabudzetowa-424df",
+            storageBucket: "aplikacjabudzetowa-424df.firebasestorage.app",
+            messagingSenderId: "1078245798279",
+            appId: "1:1078245798279:web:70cc65877a23c965d2a322",
+            measurementId: "G-C8THRLP3HE"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
